@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // alert('ready execution')
-  console.log('new socket')
   var messages = []
   const socket = io.connect()
   const field = document.getElementById('data')

@@ -1,12 +1,9 @@
 const express = require('express')
 const app = express()
 const http = require('http').Server(app)
-// const io = require('socket.io')(http)
-
 const path = require('path')
 const bodyParser = require('body-parser')
-// var userDetails = []
-// var userCount = 0
+const register = require('./routes/register')
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
@@ -20,6 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.get('/', (req, res) => {
   res.render('chat_ui')
 })
+app.get('/register', register.form)
+app.post('/register', register.submit)
 
 http.listen(3000, () => {
   console.log('Server is listening at * 3000')

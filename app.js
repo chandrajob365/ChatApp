@@ -4,6 +4,7 @@ const http = require('http').Server(app)
 const path = require('path')
 const bodyParser = require('body-parser')
 const register = require('./routes/register')
+const login = require('./routes/login')
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
@@ -19,6 +20,9 @@ app.get('/', (req, res) => {
 })
 app.get('/register', register.form)
 app.post('/register', register.submit)
+
+app.get('/login', login.form)
+app.post('/login', login.submit)
 
 http.listen(3000, () => {
   console.log('Server is listening at * 3000')

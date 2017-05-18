@@ -16,8 +16,8 @@ class Users {
     db.all('SELECT * FROM users', cb)
   }
 
-  static find (name, cb) {
-    db.get('SELECT * FROM users WHERE userName = ?', name, cb)
+  static find (data, cb) {
+    db.get('SELECT * FROM users WHERE userName = ?', data.name, cb)
   }
 
   static create (data, cb) {

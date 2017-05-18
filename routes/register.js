@@ -7,7 +7,7 @@ exports.submit = (req, res, next) => {
   let data = req.body.user
   console.log('data->', data)
   console.log('data.name->', data.name, 'data.pass->', data.pass)
-  UserDB.find(data.name, (err, user) => {
+  UserDB.find(data, (err, user) => {
     if (err) return next(err)
     console.log('user->', user)
     if (user) {

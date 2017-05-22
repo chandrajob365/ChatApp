@@ -3,7 +3,12 @@ const app = express()
 const http = require('http').Server(app)
 const path = require('path')
 const bodyParser = require('body-parser')
-const session = require('express-session')
+const session = require('express-session')({
+  secret: 'my-secret',
+  resave: true,
+  saveUninitialized: true
+})
+
 const register = require('./routes/register')
 const login = require('./routes/login')
 const chat = require('./routes/chat')
@@ -16,11 +21,12 @@ app.use(express.static(path.join(__dirname, '/public')))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
-}))
+// app.use(session({
+//   secret: 'keyboard cat',
+//   resave: false,
+//   saveUninitialized: true
+// }))
+app.use(session)
 
 app.get('/', (req, res, next) => {
   res.render('index', {title: 'Welcome to chat app , Login / Register to continue'})
@@ -37,4 +43,4 @@ http.listen(3000, () => {
 })
 
 const socket = require('./lib/chat_server')
-socket.listen(http)
+socket.listen(http, session)

@@ -5,6 +5,6 @@ exports.ui = (req, res, next) => {
     req.userName = res.locals.userName = name
     res.render('chat_ui', {userName: name})
   } else {
-                  
+      next()          
   }
 }

@@ -17,7 +17,9 @@ class Users {
   }
 
   static find (data, cb) {
+    if (data) {
     db.get('SELECT * FROM users WHERE userName = ?', data.name, cb)
+  }
   }
 
   static create (data, cb) {

@@ -14,14 +14,12 @@ exports.submit = (req, res, next) => {
     if(err) return next(err)
     console.log('user->', user)
     if (!user) {
-      console.log('User Not found with user name : ', data.name)
       return res.redirect('back')
     }if (!isValidPassword(data, user)) {
-      console.log('Invalid password')
       return res.redirect('back')
     }
-    //req.session.put
-    return res.redirect('/')
+    req.session.user = user
+    return res.redirect('/chatRelay')
   })
 }
 
@@ -30,4 +28,11 @@ function isValidPassword (data, user) {
   let res = bcrypt.compareSync(data.pass, user.pass)
   console.log('res->', res)
   return res
+}
+
+exports.logout = (req, res, next) => {
+  req.session.destroy((err) => {
+    if(err) throw err
+    res.redirect('/')
+  })
 }

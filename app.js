@@ -21,17 +21,13 @@ app.use(express.static(path.join(__dirname, '/public')))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-// app.use(session({
-//   secret: 'keyboard cat',
-//   resave: false,
-//   saveUninitialized: true
-// }))
 app.use(session)
 
 app.get('/', (req, res, next) => {
   res.render('index', {title: 'Welcome to chat app , Login / Register to continue'})
 })
 app.get('/chatRelay', chat.ui)
+
 app.get('/register', register.form)
 app.post('/register', register.submit)
 

@@ -9,8 +9,16 @@
   <% include menu %>
   <body>
 
-    <div id="body">
-      <ul id="content"></ul>
+    <div id="body" >
+      <div style="width:100%">
+      <div style = "float:left; width:20%">
+      Active Users - 
+      <ul id = "activeUsers"> </ul>
+    </div>
+    <div style = "float:left; width:80%">
+      <ul id="content" style="float:left ; width: 70%"></ul>
+    </div>
+  </div>
       <form action="">
         <input type="text" id="data" placeholder="Enter your message"/>
         <button id="send">Send</button>

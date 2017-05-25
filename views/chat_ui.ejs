@@ -12,16 +12,27 @@
     <div id="body" >
       <div style="width:100%">
       <div style = "float:left; width:20%">
-      Active Users - 
+      Active Users -
       <ul id = "activeUsers"> </ul>
     </div>
-    <div style = "float:left; width:80%">
-      <ul id="content" style="float:left ; width: 70%"></ul>
+    <div style = "float:left; width:50%">
+      <ul id="content" style = "float:left; width:80%"></ul>
+    </div>
+    <div style = "float:left; width:30%">
+      Your Rooms -
+      <ul id = "displayRooms">
+      </ul>
     </div>
   </div>
       <form action="">
         <input type="text" id="data" placeholder="Enter your message"/>
         <button id="send">Send</button>
+        <br>
+        <select id = "selectRooms">
+          <option value = "Room2"> Room2 </option>
+          <option value = "Room3"> Room3 </option>
+        <select>
+        <button id="join">Join</button>
       </form>
   </div>
   </body>

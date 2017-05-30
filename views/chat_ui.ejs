@@ -12,16 +12,15 @@
     <div id="body" >
       <div style="width:100%">
       <div style = "float:left; width:20%">
-      Active Users -
-      <ul id = "activeUsers"> </ul>
-    </div>
+        Active Users -
+        <ul id = "defaultActiveUsers"> </ul>
+        <ul id = "room1ActiveUsers" ></ul>
+        <ul id = "room2ActiveUsers" ></ul>
+      </div>
     <div style = "float:left; width:50%">
-      <ul id="content" style = "float:left; width:80%"></ul>
-    </div>
-    <div style = "float:left; width:30%">
-      Your Rooms -
-      <ul id = "displayRooms">
-      </ul>
+      <ul id="defaultRoomContent" style = "float:left; width:90%"> DEFAULT</ul>
+      <ul id="room1Content" style = "float:left; width:90%" > room1Content</ul>
+      <ul id="room2Content" style = "float:left; width:90%" >room2Content</ul>
     </div>
   </div>
       <form action="">
@@ -29,10 +28,13 @@
         <button id="send">Send</button>
         <br>
         <select id = "selectRooms">
+          <option value = "Room1"> Room1 </option>
           <option value = "Room2"> Room2 </option>
-          <option value = "Room3"> Room3 </option>
-        <select>
+        </select>
         <button id="join">Join</button>
+        <select id = "switchRooms">
+        </select>
+        <button id ="switchButton">Switch Room</button>
       </form>
   </div>
   </body>

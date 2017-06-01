@@ -3,10 +3,17 @@ const bcrypt = require('bcryptjs')
 const dbName = 'chat.sqlite'
 const db = new sqlite3.Database(dbName)
 
+// db.serialize(() => {
+//   const sql = `
+//   CREATE TABLE IF NOT EXISTS users
+//   (id integer primary key AUTOINCREMENT, phoneNumber, userName, pass, salt)
+//   `;
+//   db.run(sql)
+// })
 db.serialize(() => {
   const sql = `
   CREATE TABLE IF NOT EXISTS users
-  (id integer primary key AUTOINCREMENT, userName, pass, salt)
+  (id integer primary key AUTOINCREMENT, phoneNumber, userName)
   `;
   db.run(sql)
 })
@@ -18,24 +25,34 @@ class Users {
 
   static find (data, cb) {
     if (data) {
-    db.get('SELECT * FROM users WHERE userName = ?', data.name, cb)
-  }
+      db.get('SELECT * FROM users WHERE userName = ?', data.name, cb)
+    }
   }
 
-  static create (data, cb) {
+  static findByPhoneNumber (phoneNumber, cb) {
+    if (phoneNumber) {
+      db.get('SELECT * FROM users WHERE phoneNumber = ?', phoneNumber, cb)
+    }
+  }
+  /* static create (data, cb) {
     data.salt = bcrypt.genSaltSync(10)
     data.pass = bcrypt.hashSync(data.pass, data.salt)
     console.log('salt-->', data.salt)
     console.log('pass-->', data.pass)
-    const sql = 'INSERT INTO users(userName, pass, salt) VALUES (?, ?, ?)'
-    db.run(sql, data.name, data.pass, data.salt, cb)
+    const sql = 'INSERT INTO users(phoneNumber, userName, pass, salt) VALUES (?, ?, ?)'
+    db.run(sql, data.phoneNumber, data.name, data.pass, data.salt, cb)
+
+  } */
+
+  static insert (data, cb) {
+    const sql = 'INSERT INTO users(phoneNumber, userName) VALUES (?, ?)'
+    db.run(sql, data.phoneNumber, data.name, cb)
 
   }
-
-  static delete (id, cb) {
+  /* static delete (id, cb) {
     if (!id) return cb(new Error('Please provide an id'))
     db.run('DELETE FROM users WHERE id = ?', id, cb)
-  }
+  } */
 }
 module.exports = db
 module.exports.Users = Users

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+  <title>AccountKit Login</title>
+  <link rel='stylesheet' href='/stylesheet/style.css'>
+  <link rel='stylesheet' href='/stylesheet/bulma.css'> </link>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- HTTPS required. HTTP will give a 403 forbidden response -->
+  <script src="https://sdk.accountkit.com/en_US/sdk.js"></script>
+</head>
+<body>
+<!-- <div class = "box box_custom level-item is-fullheight"> -->
+  <section class="hero is-primary is-bold is-fullheight">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <h1 class="title is-3  is-spaced">Connect to Chat Social</h1><br>
+        <form id="login_success" method="post" action="/loginSucess">
+          <input id="csrf" type="hidden" name="csrf" />
+          <input id="code" type="hidden" name="code" />
+        </form>
+            <button class="button is-info is-small is-active" onclick="smsLogin();">
+              Login via SMS
+            </button>
+      </div>
+    </div>
+  </section>
+<!-- </div> -->
+</body>
+<script src="/javascript/accountKitLogin.js"></script>
+</html>

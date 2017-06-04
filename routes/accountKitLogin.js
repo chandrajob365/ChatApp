@@ -65,9 +65,9 @@ const checkForPhoneNumberAndRedirect = (phoneNumber, req, res, next) => {
     })
 }
 
-exports.logout = (req, res, next) => {
+/* exports.logout = (req, res, next) => {
   req.session.destroy((err) => {
     if(err) throw err
-    res.redirect('/login')
+    res.redirect('/')
   })
-}
+} */

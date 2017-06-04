@@ -1,49 +1,11 @@
+.spacer {
+  height:20px;
+}
+.members .members-title {
+  padding-bottom: 10px;
+}
 
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-a{
-color: #00B7FF;
-}
-#body {
-  width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-#defaultRoomContent {
-  width: 690px;
-  height: 300px;
-  overflow: auto;
-  background-color: #eee;
-  margin-bottom: 1em;
-  margin-right: 10px;
-}
-#room1Content {
-  width: 690px;
-  height: 300px;
-  overflow: auto;
-  background-color: #eee;
-  margin-bottom: 1em;
-  margin-right: 10px;
-}
-#room2Content {
-  width: 690px;
-  height: 300px;
-  overflow: auto;
-  background-color: #eee;
-  margin-bottom: 1em;
-  margin-right: 10px;
-}
-.marginStyle {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-#content li:nth-child(odd) { background: #eee; }
-#data {
-  width: 700px;
-  margin-bottom: 1em;
-  margin-right: 1em;
+.members .members-msgCount {
+  padding-bottom: 8px;
+  color: #3273dc;
 }

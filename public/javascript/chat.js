@@ -25,8 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return false
   }
 
-    joinRoom = function (event) {
-    currentRoom = event.target.value
+    joinRoom = function (roomName) {
+    // currentRoom = event.srcElement.value
+    // if (event.srcElement.nodeName !== 'BUTTON') {
+    //   console.log('Not Button condition')
+    //   currentRoom = event.srcElement.offsetParent.value
+    // }
+    currentRoom = roomName
     socket.emit('joinRoom', {
       room: currentRoom
     })
@@ -169,16 +174,17 @@ const createJoinedRoomNode = (alreadyJoined, roomName) => {
   button.value = roomName
 
   //button.onclick = alert('onclick', event)
-  button.addEventListener ('click', function (event) {
-    currentRoom = event.target.value
-    toggleUsersAndMessageViewPannel(currentRoom)
-  }, false)
-  // let span = document.createElement('span')
-  // span.classList.add('icon', 'is-small')
-  // let i = document.createElement('i')
-  // i.classList.add('fa', 'fa-toggle-on')
-  // span.appendChild(i)
-  // button.appendChild(span)
+  button.addEventListener ('click', function (roomName) {
+    // console.log('Inside switchroom button onclick ##event.srcElement## ', event.target.value)
+    currentRoom = roomName
+    toggleUsersAndMessageViewPannel(roomName)
+  }, true)
+  let span = document.createElement('span')
+  span.classList.add('icon', 'is-small')
+  let i = document.createElement('i')
+  i.classList.add('fa', 'fa-toggle-on')
+  span.appendChild(i)
+  button.appendChild(span)
   div5ChildOf1.appendChild(button)
 
   div1.appendChild(div2ChildOf1)

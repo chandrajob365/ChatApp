@@ -1,5 +1,4 @@
 const sqlite3 = require('sqlite3').verbose()
-const bcrypt = require('bcryptjs')
 const dbName = 'chat.sqlite'
 const db = new sqlite3.Database(dbName)
 db.serialize(() => {
@@ -11,23 +10,23 @@ db.serialize(() => {
 })
 
 class Users {
-  static all (cb) {
+  static all(cb) {
     db.all('SELECT * FROM users', cb)
   }
 
-  static find (data, cb) {
+  static find(data, cb) {
     if (data) {
       db.get('SELECT * FROM users WHERE userName = ?', data.name, cb)
     }
   }
 
-  static findByPhoneNumber (phoneNumber, cb) {
+  static findByPhoneNumber(phoneNumber, cb) {
     if (phoneNumber) {
       db.get('SELECT * FROM users WHERE phoneNumber = ?', phoneNumber, cb)
     }
   }
 
-  static insert (data, cb) {
+  static insert(data, cb) {
     const sql = 'INSERT INTO users(phoneNumber, userName) VALUES (?, ?)'
     db.run(sql, data.phoneNumber, data.name, cb)
 

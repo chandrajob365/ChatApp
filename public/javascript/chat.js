@@ -1,5 +1,5 @@
 const socket = io.connect()
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
   var messages = []
   const defaultActiveUsers = document.getElementById('defaultActiveUsers')
   const room1ActiveUsers = document.getElementById('room1ActiveUsers')
@@ -9,14 +9,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const room2Content = document.getElementById('room2Content')
   const field = document.getElementById('data')
   const sendButton = document.getElementById('send')
-  // const selectRooms = document.getElementById('selectRooms')
-  const availableRooms = document.getElementsByClassName('join')
   const alreadyJoined = document.getElementById('alreadyJoined')
   var roomUsersObj = {}
   var rooms = []
   var currentRoom = 'Default Room'
   // socket.emit('activeUsers')
-  sendButton.onclick = function () {
+  sendButton.onclick = function() {
     messages.push(field.value)
     socket.emit('chatMessage', {
       text: field.value,
@@ -25,21 +23,20 @@ document.addEventListener('DOMContentLoaded', function () {
     return false
   }
 
-    joinRoom = function (event) {
+  joinRoom = function(event) {
     currentRoom = event.target.value
     socket.emit('joinRoom', {
       room: currentRoom
     })
     return false
   }
-
-   socket.on('chatMessage', (msg) => {
-      createChildNode(getContentDisplayPannelForRoom(msg.room), msg)
-      getIndividualUser(msg.room, getUserListDisplayPannelForRoom(msg.room), msg.users)
-      if (rooms.indexOf(msg.room) === -1) {
-        rooms.push(msg.room)
-        createJoinedRoomNode(alreadyJoined, msg.room)
-      }
+  socket.on('chatMessage', (msg) => {
+    createChildNode(getContentDisplayPannelForRoom(msg.room), msg)
+    getIndividualUser(msg.room, getUserListDisplayPannelForRoom(msg.room), msg.users)
+    if (rooms.indexOf(msg.room) === -1) {
+      rooms.push(msg.room)
+      createJoinedRoomNode(alreadyJoined, msg.room)
+    }
   })
   socket.on('joinRoom', (msg) => {
     toggleUsersAndMessageViewPannel(msg.room)
@@ -53,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         defaultActiveUsers.style.display = 'block'
         room1ActiveUsers.style.display = 'none'
         room2ActiveUsers.style.display = 'none'
-        break;
+        break
       case 'Room1':
         defaultRoomContent.style.display = 'none'
         room1Content.style.display = 'block'
@@ -61,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         defaultActiveUsers.style.display = 'none'
         room1ActiveUsers.style.display = 'block'
         room2ActiveUsers.style.display = 'none'
-        break;
+        break
       case 'Room2':
         defaultRoomContent.style.display = 'none'
         room1Content.style.display = 'none'
@@ -69,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
         defaultActiveUsers.style.display = 'none'
         room1ActiveUsers.style.display = 'none'
         room2ActiveUsers.style.display = 'block'
-        break;
+        break
     }
   }
   toggleUsersAndMessageViewPannel('Default Room')
@@ -82,17 +79,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const createRoomUsersObj = (room, userPannel, user) => {
     if (!roomUsersObj[room]) {
       roomUsersObj[room] = []
-    } if (roomUsersObj[room].indexOf(user) === -1) {
+    }
+    if (roomUsersObj[room].indexOf(user) === -1) {
       roomUsersObj[room].push(user)
       createUserListChildNode(userPannel, user)
     }
   }
-const createUserListChildNode = (userPannel, user) => {
-  let p = document.createElement('p')
-  p.appendChild(document.createTextNode(user))
-  p.classList.add('members-msgCount')
-  userPannel.appendChild(p)
-}
+  const createUserListChildNode = (userPannel, user) => {
+    let p = document.createElement('p')
+    p.appendChild(document.createTextNode(user))
+    p.classList.add('members-msgCount')
+    userPannel.appendChild(p)
+  }
 
   const createChildNode = (node, msg) => {
     let article = document.createElement('article')
@@ -102,7 +100,7 @@ const createUserListChildNode = (userPannel, user) => {
     let figure = document.createElement('figure')
     figure.classList.add('image', 'is-64x64')
     let img = document.createElement('img')
-    img.src = "http://placehold.it/128x128"
+    img.src = 'http://placehold.it/128x128'
     img.alt = 'Image'
     figure.appendChild(img)
     div1ChildOfArticle.appendChild(figure)
@@ -141,73 +139,59 @@ const createUserListChildNode = (userPannel, user) => {
     node.appendChild(article)
   }
 
-const createJoinedRoomNode = (alreadyJoined, roomName) => {
-  let div1 = document.createElement('div')
-  div1.classList.add('columns')
+  const createJoinedRoomNode = (alreadyJoined, roomName) => {
+    let div1 = document.createElement('div')
+    div1.classList.add('columns')
 
-  let div2ChildOf1 = document.createElement('div')
-  div2ChildOf1.classList.add('column', 'is-3', 'is-marginless')
-  let div3ChildOfDiv2 = document.createElement('div')
-  div3ChildOfDiv2.classList.add('image')
-  let img = document.createElement('img')
-  img.src = 'http://bulma.io/images/placeholders/96x96.png'
-  div3ChildOfDiv2.appendChild(img)
-  div2ChildOf1.appendChild(div3ChildOfDiv2)
+    let div2ChildOf1 = document.createElement('div')
+    div2ChildOf1.classList.add('column', 'is-3', 'is-marginless')
+    let div3ChildOfDiv2 = document.createElement('div')
+    div3ChildOfDiv2.classList.add('image')
+    let img = document.createElement('img')
+    img.src = 'http://bulma.io/images/placeholders/96x96.png'
+    div3ChildOfDiv2.appendChild(img)
+    div2ChildOf1.appendChild(div3ChildOfDiv2)
 
-  let div4ChildOf1 = document.createElement('div')
-  div4ChildOf1.classList.add('column', 'is-6')
-  let p = document.createElement('p')
-  let strong = document.createElement('strong')
-  strong.appendChild(document.createTextNode(roomName))
-  p.appendChild(strong)
-  div4ChildOf1.appendChild(p)
+    let div4ChildOf1 = document.createElement('div')
+    div4ChildOf1.classList.add('column', 'is-6')
+    let p = document.createElement('p')
+    let strong = document.createElement('strong')
+    strong.appendChild(document.createTextNode(roomName))
+    p.appendChild(strong)
+    div4ChildOf1.appendChild(p)
 
-  let div5ChildOf1 = document.createElement('div')
-  div5ChildOf1.classList.add('column', 'is-3')
-  let button = document.createElement('button')
-  button.classList.add('button', 'is-active', 'is-info')
-  button.value = roomName
+    let div5ChildOf1 = document.createElement('div')
+    div5ChildOf1.classList.add('column', 'is-3')
+    let button = document.createElement('button')
+    button.classList.add('button', 'is-active', 'is-info')
+    button.value = roomName
+    button.addEventListener('click', function(roomName) {
+      currentRoom = roomName
+      toggleUsersAndMessageViewPannel(currentRoom)
+    }, false)
+    let span = document.createElement('span')
+    span.classList.add('icon', 'is-small')
+    let i = document.createElement('i')
+    i.classList.add('fa', 'fa-toggle-on')
+    span.appendChild(i)
+    button.appendChild(span)
+    div5ChildOf1.appendChild(button)
 
-  //button.onclick = alert('onclick', event)
-  button.addEventListener ('click', function (event) {
-    currentRoom = event.target.value
-    toggleUsersAndMessageViewPannel(currentRoom)
-  }, false)
-  // let span = document.createElement('span')
-  // span.classList.add('icon', 'is-small')
-  // let i = document.createElement('i')
-  // i.classList.add('fa', 'fa-toggle-on')
-  // span.appendChild(i)
-  // button.appendChild(span)
-  div5ChildOf1.appendChild(button)
+    div1.appendChild(div2ChildOf1)
+    div1.appendChild(div4ChildOf1)
+    div1.appendChild(div5ChildOf1)
 
-  div1.appendChild(div2ChildOf1)
-  div1.appendChild(div4ChildOf1)
-  div1.appendChild(div5ChildOf1)
-
-  alreadyJoined.appendChild(div1)
-}
-
-
-  const clearNodes = (node, data) => {
-    while(node.firstChild) {
-      node.removeChild(node.firstChild)
-      data.splice(0, data.length)
-    }
+    alreadyJoined.appendChild(div1)
   }
+
   const getContentDisplayPannelForRoom = (room) => {
-    if(room === 'Default Room') return defaultRoomContent
-    if(room === 'Room1') return room1Content
-    if(room === 'Room2') return room2Content
+    if (room === 'Default Room') return defaultRoomContent
+    if (room === 'Room1') return room1Content
+    if (room === 'Room2') return room2Content
   }
   const getUserListDisplayPannelForRoom = (room) => {
-    if(room === 'Default Room') return defaultActiveUsers
-    if(room === 'Room1') return room1ActiveUsers
-    if(room === 'Room2') return room2ActiveUsers
-  }
-  const addClickFunctionality = () => {
-    for (let room of availableRooms) {
-      room.addEventListner('click', joinRoom(event.target.value), false)
-    }
+    if (room === 'Default Room') return defaultActiveUsers
+    if (room === 'Room1') return room1ActiveUsers
+    if (room === 'Room2') return room2ActiveUsers
   }
 })

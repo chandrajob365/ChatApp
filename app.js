@@ -14,7 +14,6 @@ const chat = require('./routes/chat')
 const accountKitLogin = require('./routes/accountKitLogin')
 const appInfo = require('./config/app_config.json')
 const newUser = require('./routes/newUser')
-const test1 = require('./routes/test')
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
@@ -27,7 +26,6 @@ app.use(bodyParser.urlencoded({
   extended: true
 }))
 app.use(session)
-app.use(test1.test)
 /* Account Kit related */
 
 appInfo.csrf_guid = Guid.raw()

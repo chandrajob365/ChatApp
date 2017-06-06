@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     return false
   }
 
-  joinRoom = function(event) {
-    currentRoom = event.target.value
+  joinRoom = function(roomName) {
+    currentRoom = roomName
     socket.emit('joinRoom', {
       room: currentRoom
     })
@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   })
   socket.on('joinRoom', (msg) => {
+    currentRoom = msg.room
     toggleUsersAndMessageViewPannel(msg.room)
   })
   const toggleUsersAndMessageViewPannel = room => {
@@ -165,7 +166,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let button = document.createElement('button')
     button.classList.add('button', 'is-active', 'is-info')
     button.value = roomName
-    button.addEventListener('click', function(roomName) {
+    button.addEventListener('click', function() {
+      console.log('!!!!!!!!!!!Hi......!!!!!!!!roomName= ', roomName)
       currentRoom = roomName
       toggleUsersAndMessageViewPannel(currentRoom)
     }, false)

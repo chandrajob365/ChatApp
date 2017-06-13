@@ -4,7 +4,8 @@ AccountKit_OnInteractive = function() {
     appId: '169812573551460',
     state: 'csrf',
     version: 'v1.1',
-    fbAppEventsEnabled: true
+    fbAppEventsEnabled: true,
+    debug: true
   })
 }
 

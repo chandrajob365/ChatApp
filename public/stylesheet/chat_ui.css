@@ -1,5 +1,8 @@
-.spacer {
+.spacer-vertical {
   height:20px;
+}
+.spacer-horizontal{
+  width:10px;
 }
 .members .members-title {
   padding-bottom: 10px;
@@ -8,4 +11,7 @@
 .members .members-msgCount {
   padding-bottom: 8px;
   color: #3273dc;
+}
+.bg-color{
+  background-color: #D6DBDF;
 }

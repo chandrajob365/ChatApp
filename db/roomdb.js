@@ -67,15 +67,10 @@ class Rooms {
     redisClient.lrange(groupName, 0, -1, (err, messagesList) => {
       if (err) throw new Error(err)
       console.log('<roomdb.js getGroupMessages > messagesList = ', messagesList)
-      //parseMessages(JSON.parse(messagesList))
       console.log('<roomdb.js getGroupMessages > messages = ', messagesList)
       cb(messagesList)
     })
   }
 }
-const parseMessages = messageList => {
-  //for
-}
 
-// module.exports = db
 module.exports.Rooms = Rooms

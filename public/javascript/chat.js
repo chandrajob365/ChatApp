@@ -42,14 +42,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   })
 
-  socket.on('createGroup', (obj) => {
+  // socket.on('createGroup', (obj) => {
+  //   field.disabled = false
+  //   sendButton.disabled = false
+  //   console.log('<chat.js>Inside createGroup -> ', obj)
+  //   populateGroup(obj.groupName)
+  //   if (currentGroup === '') {
+  //     currentGroup = obj.groupName
+  //     populateCurrentGroupName(obj.groupName)
+  //   }
+  //   // !! < Method to display system messages > Add method to relay welcome message to all the member of group !!
+  // })
+  socket.on('createGroup', (groupName) => {
     field.disabled = false
     sendButton.disabled = false
-    console.log('<chat.js>Inside createGroup -> ', obj)
-    populateGroup(obj.groupName)
+    console.log('<chat.js>Inside createGroup -> ', groupName)
+    populateGroup(groupName)
     if (currentGroup === '') {
-      currentGroup = obj.groupName
-      populateCurrentGroupName(obj.groupName)
+      currentGroup = groupName
+      populateCurrentGroupName(groupName)
     }
     // !! < Method to display system messages > Add method to relay welcome message to all the member of group !!
   })
@@ -111,12 +122,16 @@ const createGroup = () => {
   }
   const switchGroup = groupName => {
     console.log('Inside switchGroup <chat.js> client side groupName -> ', groupName)
-    currentGroup = groupName
-    console.log('Inside switchGroup <chat.js> client side currentGroup -> ', currentGroup)
-      clearMessagePannel()
-    socket.emit('switchGroup', {
-      name: groupName
-    })
+    if (currentGroup !== groupName) {
+      currentGroup = groupName
+      console.log('Inside switchGroup <chat.js> client side currentGroup -> ', currentGroup)
+        clearMessagePannel()
+      socket.emit('switchGroup', {
+        name: groupName
+      })
+    }
+    console.log('currentGroup and group to be switched are same')
+
   }
   socket.on('populateGroupWithEmptyMessageList', groupName => {
     console.log('Inside of populateGroupName <chat.js client side> currentGroup = ', currentGroup, 'groupName.name = ', groupName.name)
@@ -143,14 +158,16 @@ const addToTextBox = obj => {
 }
 const populateCurrentGroupName = groupName => {
   let currentGroup = document.getElementById('currentGroup')
+  currentGroup.style.cursor = 'pointer'
   currentGroup.innerHTML = groupName
-  // currentGroup.addEventListener('click', () => {
-  //   displayGroupMembersCard(groupName)
-  // }, true)
 }
-// const displayGroupMembersCard = groupName => {
-//
-// }
+const displayGroupMembersCard = () => {
+  let currentGroup = document.getElementById('currentGroup').innerHTML
+  console.log('Inside displayGroupMembersCard groupName -> ', currentGroup)
+  socket.emit('getGroupDetail', {
+    name: currentGroup
+  })
+}
 const populateMessagePannel = msg => {
   let messageContentWrapper = document.getElementById('messageContent')
   let article = document.createElement('article')

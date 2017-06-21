@@ -39,14 +39,14 @@
              </a>
            </p>
            <p class="control">
-             <button class="button is-info modal-toggle" id="displayModal" onclick='showModal("displayModal")'>CreateGroup</button>
+             <button class="button is-info" id="displayModal" onclick='showModal("modal_newRoom")'>CreateGroup</button>
              <!--Modal Start-->
              <div id = "modal_newRoom" class= "modal" >
                <div class= "modal-background"></div>
                <div class="modal-card">
                  <header class="modal-card-head">
                    <p class="modal-card-title is-info">Create New Group</p>
-                   <button class="modal-close" onclick='closeModal("delete")' id="delete"></button>
+                   <button class="modal-close" onclick='closeModal("modal_newRoom")'></button>
                  </header>
                  <section class="modal-card-body">
                    <!-- Content ... -->
@@ -130,10 +130,10 @@
         </div>
 
         <!-- Message Pannel Start -->
-        <div class="column is-9" id="message-pannel">
+        <div class="column is-9" id="messagePannel">
           <div class="box">
             <p>
-              <span class="title is-5 tag" id = "currentGroup" onclick='displayGroupMembersCard()'></span>
+              <span class="title is-5 tag" id = "currentGroup" onclick='displayGroupInfoCard()'></span>
             </p>
             <hr>
              <div id = "messageContent">
@@ -141,13 +141,99 @@
         </div>
       </div>
         <!-- Message Pannel End -->
+        <!-- Group Info pannel Start -->
+      <div class="column is-3" id="groupInfoPannel" style= "display:none">
+        <!-- <div class="box"> -->
+            <div class="card">
+              <div class="card-header">
+                <p class="card-header-title">
+                  Group Info
+                </p>
+                <p class="card-header-icon">
+                  <button class="delete" onclick= 'resizeChatUIAndHideGroupInfoPannel("groupInfoPannel")'></button>
+                </p>
+              </div>
+              <div class="card-content" id ="groupMemberDisplayCard">
+                <!-- Start of Add Participant Text -->
+                <p><span class="title is-6 tag" style="cursor:pointer" id="displayAddParticipantText" onclick='showModal("modalAddUser")'>
+                  <span class="icon is-medium">
+                    <i class="fa fa-user-plus"></i>
+                  </span>
+                   &nbsp;Add participant
+                 </span>
+               </p>
+
+                <!-- End of Add Participant Text-->
+                <!-- Start of Member Names -->
+                <!-- <div class="columns groupMemberList">
+                  <div class="column is-3 is-marginless">
+                    <div class="image">
+                      <img src="http://bulma.io/images/placeholders/96x96.png">
+                    </div>
+                  </div>
+                  <div class="column is-6">
+                    <p>
+                      <strong>User1</strong>
+                    </p>
+                  </div>
+                  <div class="column is-3">
+                      <button class="button delete is-danger"></button>
+                  </div>
+                </div> -->
 
 
+                <!-- <hr>
+                <div class="columns">
+                  <div class="column is-3 is-marginless">
+                    <div class="image">
+                      <img src="http://bulma.io/images/placeholders/96x96.png">
+                    </div>
+                  </div>
+                  <div class="column is-6">
+                    <p>
+                      <strong>User2</strong>
+                    </p>
+                  </div>
+                  <div class="column is-3">
+                    <span class="button is-info is-small is-outlined is-clearfix"> Admin </span>
+                  </div>
+                </div> -->
+                <!-- End of Member Names -->
+              </div>
+              <footer class="card-footer">
+                <span class="card-footer-item ">
+                  <span class="tag is-danger is-medium">
+                   Exit Group
+                  </span>
+                </span>
+              </footer>
+            </div>
+            <!--Modal start -->
+            <div class="modal" id="modalAddUser">
+              <div class="modal-background"></div>
+              <div class="modal-card">
+                <header class="modal-card-head">
+                  <p class="modal-card-title is-info">Add Participant</p>
+                  <button class="modal-close" onclick='closeModal("modalAddUser")'></button>
+                </header>
+                <section class="modal-card-body">
+                  <!-- Content ... -->
+                </section>
+                <footer class="modal-card-foot">
+                  <p class="control">
+                    <button class="button is-success" onclick='addNewParticipant()' id="AddParticipant">Add</button>
+                  </p>
+                </footer>
+              </div>
+            </div>
+            <!--Modal End -->
+      </div>
+      <!-- Group Info pannel End -->
     </div>
       <!-- End of Row 1-->
-      <!-- Start of Row2 for msg entry -->
+      <!-- Start of Row2 for msg entry by user-->
       <div class="columns">
-        <div class="column is-offset-3 is-9">
+        <div class="column is-offset-3 is-9" id="msgInputPannel">
           <div class="field has-addons">
             <p class="control is-expanded">
               <input class="input" id="data" type="text" autocomplete="off" placeholder="Enter your message">

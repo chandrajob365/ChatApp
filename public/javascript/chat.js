@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var roomUsersObj = {}
   var rooms = []
 
-  // socket.emit('activeUsers')
   socket.on('setDefaultRoom', (groupName) => {
     console.log('<client chat.js setDefaultRoom> groupName = ', groupName)
     currentGroup = groupName
@@ -42,17 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   })
 
-  // socket.on('createGroup', (obj) => {
-  //   field.disabled = false
-  //   sendButton.disabled = false
-  //   console.log('<chat.js>Inside createGroup -> ', obj)
-  //   populateGroup(obj.groupName)
-  //   if (currentGroup === '') {
-  //     currentGroup = obj.groupName
-  //     populateCurrentGroupName(obj.groupName)
-  //   }
-  //   // !! < Method to display system messages > Add method to relay welcome message to all the member of group !!
-  // })
   socket.on('createGroup', (groupName) => {
     field.disabled = false
     sendButton.disabled = false
@@ -126,6 +114,7 @@ const createGroup = () => {
       currentGroup = groupName
       console.log('Inside switchGroup <chat.js> client side currentGroup -> ', currentGroup)
         clearMessagePannel()
+        resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
       socket.emit('switchGroup', {
         name: groupName
       })
@@ -140,13 +129,15 @@ const createGroup = () => {
       populateCurrentGroupName(groupName.name)
     }
   })
-  const showModal = elementId => {
-    let modal = document.getElementById('modal_newRoom')
+
+
+  const showModal = modalId => {
+    let modal = document.getElementById(modalId)
     modal.classList.add('is-active')
   }
 
-const closeModal = elementId => {
-  let modal = document.getElementById('modal_newRoom')
+const closeModal = modalId => {
+  let modal = document.getElementById(modalId)
   modal.classList.remove('is-active')
 }
 const addToTextBox = obj => {
@@ -161,13 +152,7 @@ const populateCurrentGroupName = groupName => {
   currentGroup.style.cursor = 'pointer'
   currentGroup.innerHTML = groupName
 }
-const displayGroupMembersCard = () => {
-  let currentGroup = document.getElementById('currentGroup').innerHTML
-  console.log('Inside displayGroupMembersCard groupName -> ', currentGroup)
-  socket.emit('getGroupDetail', {
-    name: currentGroup
-  })
-}
+
 const populateMessagePannel = msg => {
   let messageContentWrapper = document.getElementById('messageContent')
   let article = document.createElement('article')
@@ -217,7 +202,113 @@ const populateMessagePannel = msg => {
   messageContentWrapper.appendChild(article)
   messageContentWrapper.appendChild(hr)
 }
+const displayGroupInfoCard = () => {
+  let currentGroup = document.getElementById('currentGroup').innerHTML
+  console.log('Inside displayGroupInfoCard groupName -> ', currentGroup)
+  socket.emit('getGroupDetail', currentGroup)
+}
+const addNewParticipant = () => {
+  console.log('<client chat.js> Entry addNewParticipant ')
+}
+socket.on('populateGroupInfo', groupInfoObj => {
+  console.log('<chat.js client side populateGroupInfo > groupInfoObj -> ', groupInfoObj)
+  if(!groupInfoObj.isAdmin) {
+    document.getElementById('displayAddParticipantText').style.display = 'none'
+  } else {
+    document.getElementById('displayAddParticipantText').style.display = 'block'
+  }
+  populateAdminGroupInfoPannel(groupInfoObj)
+})
+const resizeChatUIAndShowGroupInfoPannel = () => {
+  let messagePannel = document.getElementById('messagePannel')
+  messagePannel.className = messagePannel.className.replace('is-9', 'is-6')
+  let msgInputPannel = document.getElementById('msgInputPannel')
+  msgInputPannel.className = msgInputPannel.className.replace('is-9', 'is-6')
+  document.getElementById('groupInfoPannel').style.display = 'block'
+}
+const resizeChatUIAndHideGroupInfoPannel = pannelId => {
+  emptyMemberListPannel()
+  document.getElementById(pannelId).style.display = 'none'
+  let messagePannel = document.getElementById('messagePannel')
+  messagePannel.className = messagePannel.className.replace('is-6', 'is-9')
+  let msgInputPannel = document.getElementById('msgInputPannel')
+  msgInputPannel.className = msgInputPannel.className.replace('is-6', 'is-9')
+}
+const emptyMemberListPannel = () => {
+  var elements = document.getElementById('groupMemberDisplayCard').getElementsByTagName('hr')
+  while (elements[0]) elements[0].parentNode.removeChild(elements[0])
+  let memberInfoRows = document.getElementsByClassName('groupMemberList')
+  console.log('memberInfoRows -> ', memberInfoRows)
+  Array.prototype.forEach.call(memberInfoRows, (memberInfoRow) => {
+    memberInfoRow.innerHTML = ''
+  })
+}
+const populateAdminGroupInfoPannel = groupInfoObj => {
+  console.log('Inside Admin pannel')
+  resizeChatUIAndShowGroupInfoPannel()
+  for (let userName of groupInfoObj.userList) {
+    let groupMemberDisplayWrapper = document.getElementById('groupMemberDisplayCard')
+    let hr = document.createElement('hr')
+    groupMemberDisplayWrapper.appendChild(hr)
+    let div1Outter = document.createElement('div')
+    div1Outter.classList.add('columns', 'groupMemberList')
+    paintMemberImage(div1Outter)
+    paintMemberName(div1Outter, userName)
+    console.log('groupInfoObj.adminName -> ', groupInfoObj.adminName)
+    if (userName === groupInfoObj.adminName) {
+      paintAdmin(div1Outter)
+    } else if(groupInfoObj.isAdmin) {
+      paintDeleteButton(div1Outter, userName)
+    }
+    groupMemberDisplayWrapper.appendChild(div1Outter)
+  }
+}
+const paintMemberImage = div1Outter => {
+  let div2ChildOfDiv1 = document.createElement('div')
+  div2ChildOfDiv1.classList.add('column', 'is-3', 'is-marginless')
+  let div3ChildOfDiv2 = document.createElement('div')
+  div3ChildOfDiv2.classList.add('image')
+  let img = document.createElement('img')
+  img.src = 'http://bulma.io/images/placeholders/96x96.png'
 
+  div3ChildOfDiv2.appendChild(img)
+  div2ChildOfDiv1.appendChild(div3ChildOfDiv2)
+  div1Outter.appendChild(div2ChildOfDiv1)
+}
+const paintMemberName = (div1Outter, userName) => {
+  let div2ChildOfDiv1 = document.createElement('div')
+  div2ChildOfDiv1.classList.add('column', 'is-6')
+  let p = document.createElement('p')
+  let strong = document.createElement('strong')
+  strong.innerHTML = userName
+
+  p.appendChild(strong)
+  div2ChildOfDiv1.appendChild(p)
+  div1Outter.appendChild(div2ChildOfDiv1)
+}
+const paintDeleteButton = (div1Outter, userName) => {
+  let div2ChildOfDiv1 = document.createElement('div')
+  div2ChildOfDiv1.classList.add('column', 'is-3')
+  let button = document.createElement('button')
+  button.classList.add('button', 'delete', 'is-danger')
+  button.addEventListener('click', () => {
+    console.log('<client side chat.js paintDeleteButton>Inside addEventListener Entry userName = ', userName)
+  })
+  div2ChildOfDiv1.appendChild(button)
+  div1Outter.appendChild(div2ChildOfDiv1)
+}
+const paintAdmin = div1Outter => {
+  let div2ChildOfDiv1 = document.createElement('div')
+  div2ChildOfDiv1.classList.add('column', 'is-3')
+  let span = document.createElement('span')
+  span.classList.add('button', 'is-info', 'is-small', 'is-outlined')
+  span.innerHTML = 'Admin'
+  div2ChildOfDiv1.appendChild(span)
+  div1Outter.appendChild(div2ChildOfDiv1)
+}
+const populateNonAdminGroupInfoPannel = groupInfoObj => {
+  console.log('Inside normal user pannel')
+}
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''

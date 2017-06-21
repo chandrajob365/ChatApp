@@ -3,6 +3,7 @@ const redisClient = redis.createClient()
 const _groupExtn = '_grp'
 const _userExtn = '_users'
 const _messages = '_msgs'
+const _groupAdminSet = 'groupAdminSet'
 redisClient.on('connect', function () {
   console.log('connected')
 })
@@ -28,7 +29,7 @@ class Rooms {
   // }
   static saveGroupDetail (obj, cb) {
     Rooms.saveUserDetailList(obj)
-    redisClient.hmset('groupAdminSet', obj.groupName, obj.admin)
+    redisClient.hmset(_groupAdminSet, obj.groupName, obj.admin)
     obj.users.forEach(user => {
       redisClient.rpush(obj.groupName.concat(_userExtn), user)
     })
@@ -43,12 +44,22 @@ class Rooms {
   //     cb(JSON.parse(obj))
   //   })
   // }
-  // static getGroupDetailList (cb) {
-  //   redisClient.lrange('groupDetailList', 0, -1, (err, list) => {
-  //     if(err) throw new Error(err)
-  //     cb(list)
-  //   })
-  // }
+  static getGroupDetailList (groupName, cb) {
+    console.log('<roomdb.js getGroupDetailList > Entry groupName = ', groupName)
+    redisClient.lrange(groupName.concat(_userExtn), 0, -1, (err, list) => {
+      if(err) throw new Error(err)
+      console.log('<roomdb.js getGroupDetailList > users in group = ', list)
+      cb(list)
+    })
+  }
+  static getGroupAdminName (groupName, cb) {
+    console.log('<roomdb.js getGroupAdminName > Entry groupName = ', groupName)
+    redisClient.hmget(_groupAdminSet, groupName, (err, list) => {
+      if(err) throw new Error(err)
+      console.log('<roomdb.js getGroupAdminName >result from DB adminName -> ', list)
+      cb(list)
+    })
+  }
   static saveUserDetailList (obj) {
     console.log('<roomdb.js saveUserDetailList> obj -> ', obj)
     let groupName = obj.groupName

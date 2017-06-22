@@ -155,7 +155,7 @@
               </div>
               <div class="card-content" id ="groupMemberDisplayCard">
                 <!-- Start of Add Participant Text -->
-                <p><span class="title is-6 tag" style="cursor:pointer" id="displayAddParticipantText" onclick='showModal("modalAddUser")'>
+                <p><span class="title is-6 tag" style="cursor:pointer" id="displayAddParticipantText" onclick='showAndPopulateParticipantModal("modalAddUser")'>
                   <span class="icon is-medium">
                     <i class="fa fa-user-plus"></i>
                   </span>
@@ -214,10 +214,13 @@
               <div class="modal-card">
                 <header class="modal-card-head">
                   <p class="modal-card-title is-info">Add Participant</p>
-                  <button class="modal-close" onclick='closeModal("modalAddUser")'></button>
+                  <button class="modal-close" onclick='closeAddParticipantModal("modalAddUser")'></button>
                 </header>
                 <section class="modal-card-body">
-                  <!-- Content ... -->
+                  <!-- Non Member user List Start -->
+                  <div class="field" id = "nonMemberUserList">                    
+                  </div>
+                  <!-- Non Member user List End -->
                 </section>
                 <footer class="modal-card-foot">
                   <p class="control">

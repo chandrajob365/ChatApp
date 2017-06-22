@@ -12,7 +12,6 @@ exports.ui = (req, res, next) => {
 
 getAllUsers = (res, name) => {
   UserDB.all((err, users) => {
-    //console.log('<chat.js, getAllUsers > users -> ', users)
     if (err) throw new Error(err)
     if (users.length > 0) {
       res.render('chat_ui', {

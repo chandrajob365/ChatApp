@@ -29,13 +29,25 @@ class Rooms {
   // }
   static saveGroupDetail (obj, cb) {
     Rooms.saveUserDetailList(obj)
+    Rooms.saveGroupAdminSet(obj)
+    Rooms.saveGroupUserList(obj)
+    if (typeof (cb) === typeof (Function)) {
+      console.log('<chat_server.js saveGroupDetail > type of cb is callback')
+      cb()
+    }
+  }
+  static saveGroupAdminSet (obj) {
     redisClient.hmset(_groupAdminSet, obj.groupName, obj.admin)
+  }
+  static saveGroupUserList (obj, cb) {
     obj.users.forEach(user => {
       redisClient.rpush(obj.groupName.concat(_userExtn), user)
     })
-    cb()
+    if (typeof (cb) === typeof (Function)) {
+      console.log('<chat_server.js saveGroupUserList > type of cb is callback')
+      cb()
+    }
   }
-
   // static getGroupDetailObj (groupIndex, cb) {
   //   redisClient.lindex('groupDetailList', groupIndex, (err, obj) => {
   //     if (err) throw new Error(err)
@@ -60,14 +72,18 @@ class Rooms {
       cb(list)
     })
   }
-  static saveUserDetailList (obj) {
+  static saveUserDetailList (obj, cb) {
     console.log('<roomdb.js saveUserDetailList> obj -> ', obj)
     let groupName = obj.groupName
     let users = obj.users
-    let admin = obj.admin
-    if (users.indexOf(admin) === -1) users.push(admin)
+    if(obj.admin && (users.indexOf(obj.admin) === -1))
+      users.push(obj.admin)
     for (let user of users) {
       redisClient.rpush(user.concat(_groupExtn), groupName)
+    }
+    if (typeof (cb) === typeof (Function)) {
+      console.log('<roomdb.js saveUserDetailList> type of cb is callback')
+      cb()
     }
   }
   static getUserDetailList (userName, cb) {

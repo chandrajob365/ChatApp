@@ -207,9 +207,7 @@ const displayGroupInfoCard = () => {
   console.log('Inside displayGroupInfoCard groupName -> ', currentGroup)
   socket.emit('getGroupDetail', currentGroup)
 }
-const addNewParticipant = () => {
-  console.log('<client chat.js> Entry addNewParticipant ')
-}
+
 socket.on('populateGroupInfo', groupInfoObj => {
   console.log('<chat.js client side populateGroupInfo > groupInfoObj -> ', groupInfoObj)
   if(!groupInfoObj.isAdmin) {
@@ -217,7 +215,7 @@ socket.on('populateGroupInfo', groupInfoObj => {
   } else {
     document.getElementById('displayAddParticipantText').style.display = 'block'
   }
-  populateAdminGroupInfoPannel(groupInfoObj)
+  resizeUiAndPopulateAdminGroupInfoPannel(groupInfoObj)
 })
 const resizeChatUIAndShowGroupInfoPannel = () => {
   let messagePannel = document.getElementById('messagePannel')
@@ -243,9 +241,12 @@ const emptyMemberListPannel = () => {
     memberInfoRow.innerHTML = ''
   })
 }
-const populateAdminGroupInfoPannel = groupInfoObj => {
+const resizeUiAndPopulateAdminGroupInfoPannel = groupInfoObj => {
   console.log('Inside Admin pannel')
   resizeChatUIAndShowGroupInfoPannel()
+  populateAdminGroupInfoPannel(groupInfoObj)
+}
+const populateAdminGroupInfoPannel = groupInfoObj => {
   for (let userName of groupInfoObj.userList) {
     let groupMemberDisplayWrapper = document.getElementById('groupMemberDisplayCard')
     let hr = document.createElement('hr')
@@ -257,7 +258,7 @@ const populateAdminGroupInfoPannel = groupInfoObj => {
     console.log('groupInfoObj.adminName -> ', groupInfoObj.adminName)
     if (userName === groupInfoObj.adminName) {
       paintAdmin(div1Outter)
-    } else if(groupInfoObj.isAdmin) {
+    } else if(groupInfoObj.isAdmin) { // If user is admin then only give him option to delete any user
       paintDeleteButton(div1Outter, userName)
     }
     groupMemberDisplayWrapper.appendChild(div1Outter)
@@ -306,9 +307,77 @@ const paintAdmin = div1Outter => {
   div2ChildOfDiv1.appendChild(span)
   div1Outter.appendChild(div2ChildOfDiv1)
 }
-const populateNonAdminGroupInfoPannel = groupInfoObj => {
-  console.log('Inside normal user pannel')
+
+/* Add Particapant Modal Related Start */
+const showAndPopulateParticipantModal = modalId => {
+  socket.emit('getNonMemberNames', currentGroup)
+  showModal(modalId)
 }
+const closeAddParticipantModal = modalId => {
+  document.getElementById('nonMemberUserList').innerHTML = ''
+  closeModal(modalId)
+}
+socket.on('populateNonMemberList', nonMemberUserList => {
+  let nonMemberUserListWrapperDiv = document.getElementById('nonMemberUserList')
+  nonMemberUserListWrapperDiv.classList.add('field')
+  for (let nonMember of nonMemberUserList) {
+    paintNonMemberCheckBoxAndNames(nonMemberUserListWrapperDiv, nonMember.userName)
+  }
+})
+const paintNonMemberCheckBoxAndNames = (nonMemberUserListWrapperDiv, nonMemberName) => {
+  console.log('<chat.js client side paintNonMemberNames> nonMember = ', nonMemberName)
+  let div1Outter = document.createElement('div')
+  div1Outter.classList.add('columns')
+  paintCheckBox(div1Outter, nonMemberName)
+  paintMemberName(div1Outter, nonMemberName)
+  nonMemberUserListWrapperDiv.appendChild(div1Outter)
+}
+const paintCheckBox = (div1Outter, nonMemberName) => {
+  let div2ChildOfDiv1 = document.createElement('div')
+  div2ChildOfDiv1.classList.add('column', 'is-1')
+  let label = document.createElement('label')
+  label.classList.add('checkbox')
+  let checkbox = document.createElement('input')
+  checkbox.classList.add('checkbox', 'is-medium')
+  checkbox.type = 'checkbox'
+  checkbox.name = 'nonMemberUsers'
+  checkbox.value = nonMemberName
+  checkbox.addEventListener('click', () => {
+    console.log('Inside onclick event handler of checkBox')
+    checkbox.checked ? (checkbox.setAttribute('checked', 'checked')) : (checkbox.removeAttribute('checked'))
+  })
+  label.appendChild(checkbox)
+  div2ChildOfDiv1.appendChild(label)
+  div1Outter.appendChild(div2ChildOfDiv1)
+}
+const addNewParticipant = () => {
+  console.log('<client chat.js addNewParticipant> Entry addNewParticipant ')
+  let newMembersListToBeAdded = []
+  var checkBoxes = document.getElementsByName('nonMemberUsers')
+  for (let checkBox of checkBoxes) {
+    if(checkBox.checked) {
+      console.log('<client chat.js addNewParticipant> checked checkBox value = ', checkBox.value)
+      newMembersListToBeAdded.push(checkBox.value)
+    }
+  }
+  closeAddParticipantModal('modalAddUser')
+  if (newMembersListToBeAdded.length > 0) {
+    socket.emit('addNewMembersToGroup', {
+      users: newMembersListToBeAdded,
+      groupName: currentGroup
+    })
+  }
+  console.log('<client chat.js addNewParticipant> newMembersListToBeAdded = ', newMembersListToBeAdded)
+}
+socket.on('updateGroupInfoListwithNewUsers', groupUsersObj => {
+  let groupInfoPannel = document.getElementById('groupInfoPannel')
+  console.log('<client chat.js updateGroupInfoListwithNewUsers >, groupInfoObj = ', groupUsersObj)
+  if (currentGroup === groupUsersObj.groupName && groupInfoPannel.style.display === 'block') {
+    populateAdminGroupInfoPannel(groupUsersObj)
+  }
+})
+/* Add Particapant Modal Related End */
+
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''

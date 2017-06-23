@@ -72,6 +72,13 @@ class Rooms {
       cb(list)
     })
   }
+  static deleteUserFromGroup (userName, groupName, cb) {
+    console.log('<roomdb.js deleteUserFromGroup > Entry userName = ', userName, ' groupName = ', groupName)
+    redisClient.lrem(groupName.concat(_userExtn), 0, userName, (err, reply) => {
+      if(err) throw new Error(err)
+      cb(reply)
+    })
+  }
   static saveUserDetailList (obj, cb) {
     console.log('<roomdb.js saveUserDetailList> obj -> ', obj)
     let groupName = obj.groupName
@@ -91,6 +98,13 @@ class Rooms {
       console.log('<roomdb.js, getUserDetailList > userList ', list)
       if (err) throw new Error(err)
       cb(list)
+    })
+  }
+  static deleteGroupFromUserList (userName, groupName, cb) {
+    console.log('<roomdb.js deleteGroupFromUserList > Entry userName = ', userName, ' groupName = ', groupName)
+    redisClient.lrem(userName.concat(_groupExtn), 0, groupName, (err, reply) => {
+      if(err) throw new Error(err)
+      cb(reply)
     })
   }
   static saveGroupMessage (msg, sender, cb) {

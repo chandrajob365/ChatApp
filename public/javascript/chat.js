@@ -79,6 +79,7 @@ const createGroup = () => {
     let groupUserWrapper = document.getElementById('groupsAndUsers')
     let div1 = document.createElement('div')
     div1.classList.add('columns')
+    div1.setAttribute('id', groupName)
 
     let div2ChildOfDiv1 = document.createElement('div')
     div2ChildOfDiv1.classList.add('column', 'is-3')
@@ -253,6 +254,7 @@ const populateAdminGroupInfoPannel = groupInfoObj => {
     groupMemberDisplayWrapper.appendChild(hr)
     let div1Outter = document.createElement('div')
     div1Outter.classList.add('columns', 'groupMemberList')
+    div1Outter.setAttribute('id', userName)
     paintMemberImage(div1Outter)
     paintMemberName(div1Outter, userName)
     console.log('groupInfoObj.adminName -> ', groupInfoObj.adminName)
@@ -294,6 +296,7 @@ const paintDeleteButton = (div1Outter, userName) => {
   button.classList.add('button', 'delete', 'is-danger')
   button.addEventListener('click', () => {
     console.log('<client side chat.js paintDeleteButton>Inside addEventListener Entry userName = ', userName)
+    removeMemberFromGroup(userName)
   })
   div2ChildOfDiv1.appendChild(button)
   div1Outter.appendChild(div2ChildOfDiv1)

@@ -381,6 +381,14 @@ socket.on('updateGroupInfoListwithNewUsers', groupUsersObj => {
 })
 /* Add Particapant Modal Related End */
 
+// socket.on('setCurrentRoom', groupName => {
+//   console.log('<client chat.js setCurrentRoom > groupName = ', groupName, 'currentGroup = ', currentGroup)
+//   if(currentGroup === ''){
+//     currentGroup = groupName
+//     console.log('<client chat.js setCurrentRoom > After setting groupName = ', groupName, 'currentGroup = ', currentGroup)
+//   }
+//
+// })
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''

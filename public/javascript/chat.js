@@ -311,6 +311,46 @@ const paintAdmin = div1Outter => {
   div1Outter.appendChild(div2ChildOfDiv1)
 }
 
+/* Remove user from group and update user view Start */
+
+const removeMemberFromGroup = userName => {
+  console.log('<client side chat.js removeMemberFromGroup> Entry')
+  // removeUserFromGroupView(userName)
+  socket.emit('removeMemberFromGroup', {
+    userName: userName,
+    groupName: currentGroup
+  })
+}
+const removeUserFromGroupView = userName => {
+  console.log('<client side chat.js removeUserFromGroupView> Entry userName = ', userName)
+  let divMemberNameWrapper = document.getElementById(userName)
+  divMemberNameWrapper.previousSibling.remove()
+  divMemberNameWrapper.innerHTML = ''
+}
+socket.on('removeGroupContentFromUserView', userGroupObj => {
+  console.log('<client side chat.js removeGroupContentFromUserView> Entry')
+  removeGroupRelatedContent(userGroupObj.groupName)
+})
+const removeGroupRelatedContent = groupName => {
+  let groupNameWrapperDiv = document.getElementById(groupName)
+  groupNameWrapperDiv.nextSibling.remove()
+  groupNameWrapperDiv.innerHTML = ''
+  if(currentGroup === groupName) {
+    document.getElementById('currentGroup').innerHTML = ''
+    document.getElementById('messageContent').innerHTML = ''
+    let groupInfoPannel = document.getElementById('groupInfoPannel')
+    if(groupInfoPannel.style.display === 'block')
+      resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
+  }
+}
+socket.on('removeMemberDetailFromGroupInfoPannel', userGroupObj => {
+  if(currentGroup === userGroupObj.groupName && document.getElementById('groupInfoPannel').style.display === 'block') {
+    removeUserFromGroupView(userGroupObj.userName)
+  }
+})
+
+/* Remove user from group and update user view End */
+
 /* Add Particapant Modal Related Start */
 const showAndPopulateParticipantModal = modalId => {
   socket.emit('getNonMemberNames', currentGroup)

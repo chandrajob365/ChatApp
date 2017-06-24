@@ -1,11 +1,8 @@
 const socket = io.connect()
 var currentGroup = '' // !! update currentRoom as when user switches to diff room !!
 document.addEventListener('DOMContentLoaded', function () {
-  var messages = []
   const field = document.getElementById('data')
   const sendButton = document.getElementById('send')
-  var roomUsersObj = {}
-  var rooms = []
 
   socket.on('setDefaultRoom', (groupName) => {
     console.log('<client chat.js setDefaultRoom> groupName = ', groupName)
@@ -21,20 +18,20 @@ document.addEventListener('DOMContentLoaded', function () {
     sendButton.disabled = false
   })
   sendButton.onclick = function () {
-     console.log('<client chat.js onclick> currentGroup = ', currentGroup)
-     if (currentGroup.length > 0) {
-       socket.emit('chatMessage', {
-         groupName: currentGroup,
-         text: field.value
-       })
-     }
-     field.value = ''
+    console.log('<client chat.js onclick> currentGroup = ', currentGroup)
+    if (currentGroup.length > 0) {
+      socket.emit('chatMessage', {
+        groupName: currentGroup,
+        text: field.value
+      })
+    }
+    field.value = ''
     return false
   }
   socket.on('chatMessage', (msg) => {
     console.log('<chat.js chatMessage> currentGroup = ', currentGroup)
     console.log('<chat.js chatMessage> msg.groupName = ', msg.groupName)
-    if(currentGroup === msg.groupName) {
+    if (currentGroup === msg.groupName) {
       console.log('<chat.js chatMessage> currentGroup === msg.groupName')
       populateCurrentGroupName(msg.groupName)
       populateMessagePannel(msg)
@@ -57,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const createGroup = () => {
   let groupName = document.getElementById('groupName').value
   let userList = document.getElementById('usersAdded').value
-  if(groupName.length !== 0 && userList.length !== 0) {
+  if (groupName.length !== 0 && userList.length !== 0) {
     let users = userList.split(' ').filter(item => item)
     console.log('</public/javascript/chat.js createGroup > userList-> ', userList)
     console.log('</public/javascript/chat.js createGroup > users-> ', users)
@@ -72,11 +69,9 @@ const createGroup = () => {
   }
 }
 
-
-
   /* Creates new group in view of all the users added to that group */
-  const populateGroup = groupName => {
-    let groupUserWrapper = document.getElementById('groupsAndUsers')
+const populateGroup = groupName => {
+  let groupUserWrapper = document.getElementById('groupsAndUsers')
     let div1 = document.createElement('div')
     div1.classList.add('columns')
     div1.setAttribute('id', groupName)
@@ -420,16 +415,18 @@ socket.on('updateGroupInfoListwithNewUsers', groupUsersObj => {
     populateAdminGroupInfoPannel(groupUsersObj)
   }
 })
+socket.on('setCurrentRoom', groupName => {
+  console.log('<client chat.js setCurrentRoom > groupName = ', groupName, 'currentGroup = ', currentGroup)
+  if (currentGroup === '') {
+    currentGroup = groupName
+    console.log('<client chat.js setCurrentRoom > After setting groupName = ', groupName, 'currentGroup = ', currentGroup)
+  }
+})
+socket.on('populateCurrentGroupName', groupName => {
+  populateCurrentGroupName(groupName)
+})
 /* Add Particapant Modal Related End */
 
-// socket.on('setCurrentRoom', groupName => {
-//   console.log('<client chat.js setCurrentRoom > groupName = ', groupName, 'currentGroup = ', currentGroup)
-//   if(currentGroup === ''){
-//     currentGroup = groupName
-//     console.log('<client chat.js setCurrentRoom > After setting groupName = ', groupName, 'currentGroup = ', currentGroup)
-//   }
-//
-// })
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''

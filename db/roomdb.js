@@ -94,10 +94,10 @@ class Rooms {
     }
   }
   static getUserDetailList (userName, cb) {
-    redisClient.lrange(userName.concat(_groupExtn), 0, -1, (err, list) => {
-      console.log('<roomdb.js, getUserDetailList > userList ', list)
+    redisClient.lrange(userName.concat(_groupExtn), 0, -1, (err, groupList) => {
+      console.log('<roomdb.js, getUserDetailList > Groups ', groupList)
       if (err) throw new Error(err)
-      cb(list)
+      cb(groupList)
     })
   }
   static deleteGroupFromUserList (userName, groupName, cb) {

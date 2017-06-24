@@ -206,7 +206,8 @@ const populateMessagePannel = msg => {
 const displayGroupInfoCard = () => {
   let currentGroup = document.getElementById('currentGroup').innerHTML
   console.log('Inside displayGroupInfoCard groupName -> ', currentGroup)
-  socket.emit('getGroupDetail', currentGroup)
+  if(document.getElementById('groupInfoPannel').style.display === 'none')
+    socket.emit('getGroupDetail', currentGroup)
 }
 
 socket.on('populateGroupInfo', groupInfoObj => {

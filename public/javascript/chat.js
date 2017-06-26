@@ -427,6 +427,29 @@ socket.on('populateCurrentGroupName', groupName => {
 })
 /* Add Particapant Modal Related End */
 
+  /* Update user List in Create Group Modal Start*/
+socket.on('updateUserList', userName => {
+  console.log('<client chat.js updateUserList > userName = ', userName)
+  let select = document.getElementById('userList')
+  console.log('<client chat.js updateUserList > userName = ', select)
+  console.log('<client chat.js updateUserList > select.options[', userName, ' ].index = ', select.options[select.options.length - 1])
+  if(select.options.length > 0 && HTMLSelectContains(select, userName)) {
+    console.log('<client chat.js updateUserList > Inside if select.options.indexOf(select.options.length-1).value = ', select.options[select.options.length - 1].value)
+    select.add(new Option(userName, userName))
+  }
+})
+
+const HTMLSelectContains = (select, userName) => {
+  for (let i = 0; i < select.options.length; i++) {
+    if (select.options[i].value === userName) {
+      console.log('<client chat.js HTMLSelectContains > return false userName found')
+      return false
+    }
+  }
+  console.log('<client chat.js HTMLSelectContains > return true userName not found')
+  return true
+}
+  /* Update user List in Create Group Modal Start*/
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''

@@ -15,3 +15,38 @@
 .bg-color{
   background-color: #D6DBDF;
 }
+.break-word{
+  width: 50vw;
+  overflow-wrap: break-word;
+}
+.break-word-info{
+  width: 30vw;
+  overflow-wrap: break-word;
+}
+/*@media screen and (max-width:767px) {
+    img.responsive {
+        max-width: 16px;
+        max-height: 16px;
+    }
+}
+
+@media screen and (min-width:768px) {
+    img.responsive {
+        max-width: 24px;
+        max-height: 24px;
+    }
+}
+
+@media screen and (min-width:992px) {
+    img.responsive {
+        max-width: 32px;
+        max-height: 32px;
+    }
+}
+
+@media screen and (min-width:1200px) {
+    img.responsive {
+        max-width: 96px;
+        max-height: 96px;
+    }
+}*/

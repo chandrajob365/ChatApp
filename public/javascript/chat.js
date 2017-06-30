@@ -253,12 +253,12 @@ const toggleWordWrapClass = (content, olderClass, newClass) => {
 }
 const emptyMemberListPannel = () => {
   let elements = document.getElementById('groupMemberDisplayCard').getElementsByTagName('hr')
-  NodeList(elements)
+  removeNodeList(elements)
   let memberInfoRows = document.getElementsByClassName('groupMemberList')
-  NodeList(memberInfoRows)
+  removeNodeList(memberInfoRows)
 }
-const NodeList = nodeList => {
-  console.log('<client chat.js> NodeList nodeList = ', nodeList)
+const removeNodeList = nodeList => {
+  console.log('<client chat.js> removeNodeList nodeList = ', nodeList)
   while(nodeList[0]) nodeList[0].parentNode.Child(nodeList[0])
 }
 const resizeUiAndPopulateAdminGroupInfoPannel = groupInfoObj => {

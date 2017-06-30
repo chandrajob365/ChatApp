@@ -253,13 +253,13 @@ const toggleWordWrapClass = (content, olderClass, newClass) => {
 }
 const emptyMemberListPannel = () => {
   let elements = document.getElementById('groupMemberDisplayCard').getElementsByTagName('hr')
-  NodeList(elements)
+  removeNodeList(elements)
   let memberInfoRows = document.getElementsByClassName('groupMemberList')
-  NodeList(memberInfoRows)
+  removeNodeList(memberInfoRows)
 }
-const NodeList = nodeList => {
-  console.log('<client chat.js> NodeList nodeList = ', nodeList)
-  while(nodeList[0]) nodeList[0].parentNode.Child(nodeList[0])
+const removeNodeList = nodeList => {
+  console.log('<client chat.js> removeNodeList nodeList = ', nodeList)
+  while(nodeList[0]) nodeList[0].parentNode.removeChild(nodeList[0])
 }
 const resizeUiAndPopulateAdminGroupInfoPannel = groupInfoObj => {
   console.log('Inside Admin pannel')
@@ -489,5 +489,12 @@ const HTMLSelectContains = (select, userName) => {
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''
-  // messageContentWrapper.parentNode.remove(messageContentWrapper)
 }
+ /* Exit group Start */
+// const exitGroup = () => {
+//   console.log('<client chat.js exitGroup > Entry')
+//   socket.emit('exitGroup', {
+//     groupId: currentGroupId
+//   })
+// }
+ /* Exit group End */

@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     sendButton.disabled = false
     console.log('<chat.js>Inside createGroup -> ', groupObj)
     populateGroup(groupObj.groupName, groupObj.groupId)
+    console.log('<chat.js>Inside createGroup -> ', currentGroupId)
     if (currentGroupId === 0) {
       currentGroupId = groupObj.groupId
       populateCurrentGroupName(groupObj.groupName)
@@ -93,7 +94,7 @@ const populateGroup = (groupName, groupId) => {
       currentGroupId = groupId
       document.getElementById('data').disabled = false
       document.getElementById('send').disabled = false
-      console.log('Inside switchGroup <chat.js> client side currentGroup -> ', currentGroupId)
+      console.log('Inside switchGroup <chat.js> client side currentGroupId -> ', currentGroupId)
         clearMessagePannel()
         resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
       socket.emit('switchGroup', {
@@ -101,7 +102,7 @@ const populateGroup = (groupName, groupId) => {
         groupId: groupId
       })
     }
-    console.log('currentGroup and group to be switched are same')
+    console.log('currentGroupId and group to be switched are same')
 
   }
   socket.on('populateGroupWithEmptyMessageList', groupObj => {
@@ -130,8 +131,10 @@ const resetModal = modalId => {
   userList.options[0].selected = true
 }
 const addToTextBox = obj => {
+  console.log('<chat.js addToTextBox > obj = ', obj.value)
   let user = obj.value
   let displayUser = document.getElementById('usersAdded')
+  console.log('<chat.js addToTextBox > displayUser = ', displayUser)
   if (displayUser.value.indexOf(user) === -1) {
     displayUser.value += ' ' + user + ' '
   }
@@ -141,6 +144,7 @@ const createGroup = () => {
   let userList = document.getElementById('usersAdded').value
   if (groupName.length !== 0 && userList.length !== 0) {
     let users = userList.split(' ').filter(item => item)
+    // let users = userList.split(' ')
     console.log('</public/javascript/chat.js createGroup > userList-> ', userList)
     console.log('</public/javascript/chat.js createGroup > users-> ', users)
 
@@ -161,6 +165,7 @@ const populateCurrentGroupName = groupName => {
 
 const populateMessagePannel = msg => {
   let messageContentWrapper = document.getElementById('messageContent')
+  messageContentWrapper.classList.add('break-word')
   let article = document.createElement('article')
   article.classList.add('media')
   let div1ChildOfArticle = document.createElement('div')
@@ -176,7 +181,7 @@ const populateMessagePannel = msg => {
   let div2ChildOfArticle = document.createElement('div')
   div2ChildOfArticle.classList.add('media-content')
   let div3ChildOfDiv2 = document.createElement('div')
-  div3ChildOfDiv2.classList.add('content', 'break-word')
+  div3ChildOfDiv2.classList.add('content')
   let p = document.createElement('p')
   // p.classList.add('break-word')
   let strong = document.createElement('strong')
@@ -221,15 +226,21 @@ const displayGroupInfoCard = () => {
 
 socket.on('populateGroupInfo', groupInfoObj => {
   console.log('<chat.js client side populateGroupInfo > groupInfoObj -> ', groupInfoObj)
-  if(!groupInfoObj.isAdmin) {
-    document.getElementById('displayAddParticipantText').style.display = 'none'
-  } else {
-    document.getElementById('displayAddParticipantText').style.display = 'block'
-  }
+  displayAddParticipantText(groupInfoObj)
   resizeUiAndPopulateAdminGroupInfoPannel(groupInfoObj)
 })
+const displayAddParticipantText = groupInfoObj => {
+  if(!groupInfoObj.isAdmin) {
+    console.log('<client chat.js displayAddParticipantText> If part')
+    document.getElementById('displayAddParticipantText').style.display = 'none'
+  } else {
+    console.log('<client chat.js displayAddParticipantText> Else part')
+    document.getElementById('displayAddParticipantText').style.display = 'block'
+  }
+}
 const resizeChatUIAndShowGroupInfoPannel = () => {
-  toggleWordWrapClass(document.getElementsByClassName('content'), 'break-word', 'break-word-info')
+  // toggleWordWrapClass(document.getElementsByClassName('content'), 'break-word', 'break-word-info')
+  toggleWordWrapMessageContent(document.getElementById('messageContent'), 'break-word', 'break-word-info')
   let messagePannel = document.getElementById('messagePannel')
   messagePannel.className = messagePannel.className.replace('is-9', 'is-6')
   let msgInputPannel = document.getElementById('msgInputPannel')
@@ -238,20 +249,23 @@ const resizeChatUIAndShowGroupInfoPannel = () => {
 }
 const resizeChatUIAndHideGroupInfoPannel = pannelId => {
   emptyMemberListPannel()
-  toggleWordWrapClass(document.getElementsByClassName('content'), 'break-word-info', 'break-word')
+  // toggleWordWrapClass(document.getElementsByClassName('content'), 'break-word-info', 'break-word')
+  toggleWordWrapMessageContent(document.getElementById('messageContent'), 'break-word-info', 'break-word')
     document.getElementById(pannelId).style.display = 'none'
     let messagePannel = document.getElementById('messagePannel')
     messagePannel.className = messagePannel.className.replace('is-6', 'is-9')
     let msgInputPannel = document.getElementById('msgInputPannel')
     msgInputPannel.className = msgInputPannel.className.replace('is-6', 'is-9')
 }
-const toggleWordWrapClass = (content, olderClass, newClass) => {
-  for(let i = 0; i < content.length; i++) {
-    console.log('<client chat.js toggleWordWrapClass >content[', i, '] = ', content[i])
-   content[i].className = content[i].className.replace(olderClass, newClass)
-  }
+
+const toggleWordWrapMessageContent = (messageContent, olderClass, newClass) => {
+  console.log('<client chat.js toggleWordWrapMessageContent> messageContent = ', messageContent)
+  console.log('<client chat.js toggleWordWrapMessageContent> olderClass = ', olderClass)
+  console.log('<client chat.js toggleWordWrapMessageContent> newClass = ', newClass)
+  messageContent.className = messageContent.className.replace(olderClass, newClass)
 }
 const emptyMemberListPannel = () => {
+  console.log('<client chat.js emptyMemberListPannel>Entry')
   let elements = document.getElementById('groupMemberDisplayCard').getElementsByTagName('hr')
   removeNodeList(elements)
   let memberInfoRows = document.getElementsByClassName('groupMemberList')
@@ -259,7 +273,7 @@ const emptyMemberListPannel = () => {
 }
 const removeNodeList = nodeList => {
   console.log('<client chat.js> removeNodeList nodeList = ', nodeList)
-  while(nodeList[0]) nodeList[0].parentNode.Child(nodeList[0])
+  while(nodeList[0]) nodeList[0].parentNode.removeChild(nodeList[0])
 }
 const resizeUiAndPopulateAdminGroupInfoPannel = groupInfoObj => {
   console.log('Inside Admin pannel')
@@ -268,6 +282,7 @@ const resizeUiAndPopulateAdminGroupInfoPannel = groupInfoObj => {
 }
 const populateAdminGroupInfoPannel = groupInfoObj => {
   for (let userName of groupInfoObj.userList) {
+    console.log('<client chat.js populateAdminGroupInfoPannel > userName = ', userName)
     let groupMemberDisplayWrapper = document.getElementById('groupMemberDisplayCard')
     let hr = document.createElement('hr')
     groupMemberDisplayWrapper.appendChild(hr)
@@ -362,9 +377,11 @@ const removeGroupRelatedContent = groupId => {
     // document.getElementById('currentGroup').parentNode.remove(document.getElementById('currentGroup'))
     // document.getElementById('messageContent').parentNode.remove(document.getElementById('messageContent'))
     let groupInfoPannel = document.getElementById('groupInfoPannel')
-    if(groupInfoPannel.style.display === 'block')
+    if(groupInfoPannel.style.display === 'block') {
       resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
-    currentGroup = 0
+    }
+
+    currentGroupId = 0
     document.getElementById('data').disabled = true
     document.getElementById('send').disabled = true
   }
@@ -489,5 +506,25 @@ const HTMLSelectContains = (select, userName) => {
 const clearMessagePannel = () => {
   let messageContentWrapper = document.getElementById('messageContent')
   messageContentWrapper.innerHTML = ''
-  // messageContentWrapper.parentNode.remove(messageContentWrapper)
 }
+ /* Exit group Start */
+const exitGroup = () => {
+  console.log('<client chat.js exitGroup > Entry')
+  socket.emit('exitGroup', {
+    groupId: currentGroupId
+  })
+}
+socket.on('repaintGroupInfo', groupInfoObj => {
+  let groupInfoPannel = document.getElementById('groupInfoPannel')
+  if(groupInfoObj.groupId === currentGroupId && groupInfoPannel.style.display === 'block') {
+    console.log('<client side chat.js ##event## repaintGroupInfo > Inside if cond ')
+    emptyMemberListPannel()
+    repaintGroupInfo(groupInfoObj)
+  }
+})
+const repaintGroupInfo = groupInfoObj => {
+  console.log('<client chat.js repaintGroupInfo function> groupInfoObj = ', groupInfoObj)
+  displayAddParticipantText(groupInfoObj)
+  populateAdminGroupInfoPannel(groupInfoObj)
+}
+ /* Exit group End */

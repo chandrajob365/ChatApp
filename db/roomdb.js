@@ -85,8 +85,25 @@ class Rooms {
       cb(groupName[0])
     })
   }
-  static saveGroupAdminSet (obj, groupId) {
-      redisClient.hmset(_groupAdminSet, groupId, obj.admin)
+  static saveGroupAdminSet (obj, groupId, cb) {
+      redisClient.hmset(_groupAdminSet, groupId, obj.admin, (err, reply) => {
+        if(err) throw new Error(err)
+        if (typeof (cb) === typeof (Function)) {
+          console.log('<roomdb.js saveGroupAdminSet > type of cb is callback')
+          cb()
+        }
+      })
+  }
+  static delGroupAdminSet (groupObj, cb) {
+    console.log('<roomdb.js updateAdminSet > Entry')
+    redisClient.HDEL(_groupAdminSet, groupObj.groupId, (err, reply) => {
+      if(err) throw new Error(err)
+      // Rooms.saveGroupAdminSet(obj, groupId)
+      if (typeof (cb) === typeof (Function)) {
+        console.log('<roomdb.js updateAdminSet > type of cb is callback')
+        cb()
+      }
+    })
   }
   static saveGroupUserList (obj, cb) {
     obj.users.forEach(user => {
@@ -107,7 +124,7 @@ class Rooms {
     })
   }
   static getGroupAdminName (groupId, cb) {
-    console.log('<roomdb.js getGroupAdminName > Entry grougroupIdpName = ', groupId)
+    console.log('<roomdb.js getGroupAdminName > Entry groupId = ', groupId)
     redisClient.hmget(_groupAdminSet, groupId, (err, adminName) => {
       if(err) throw new Error(err)
       console.log('<roomdb.js getGroupAdminName >result from DB adminName -> ', adminName)

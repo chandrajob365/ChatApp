@@ -15,12 +15,14 @@ const retriveUserDetailAndRedirect = (phoneNumber, req, res) => {
   console.log('<newUser.js, retriveUserDetailAndRedirect > Entry')
   UserDB.findByPhoneNumber(phoneNumber, (err, user) => {
     console.log('<newUser.js, retriveUserDetailAndRedirect > callback from findByPhoneNumber user -> ', user)
-    if(err) throw new Error(err)
-    if(user) {
+    if (err) throw new Error(err)
+    if (user) {
       req.session.user = user
       res.redirect('chatRelay')
     } else {
-      res.writeHead(200, {'Content-Type': 'text/html'})
+      res.writeHead(200, {
+        'Content-Type': 'text/html'
+      })
       res.end('Something went wrong while retriving user detail :( ')
     }
   })

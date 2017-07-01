@@ -1,5 +1,4 @@
 const sqlite3 = require('sqlite3').verbose()
-const bcrypt = require('bcryptjs')
 const dbName = 'chat.sqlite'
 const db = new sqlite3.Database(dbName)
 db.serialize(() => {
@@ -15,6 +14,9 @@ class Users {
     db.all('SELECT * FROM users', cb)
   }
 
+  static allUserNames (cb) {
+    db.all('SELECT userName FROM users', cb)
+  }
   static find (data, cb) {
     if (data) {
       db.get('SELECT * FROM users WHERE userName = ?', data.name, cb)

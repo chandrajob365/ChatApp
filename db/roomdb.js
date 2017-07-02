@@ -24,22 +24,6 @@ class Rooms {
       }
     })
   }
-  // static createUniqueGroupId (obj, cb) {
-  //   let res = Rooms.isKeyGenExist(obj, cb)
-  //   console.log('<roomdb.js createUniqueGroupId> Rooms.isKeyGenExist() _keyGen res = ', res)
-  //   if (res) {
-  //     console.log('<roomdb.js createUniqueGroupId>Else Rooms.isKeyGenExist() = ', Rooms.isKeyGenExist())
-  //     Rooms.getKeyGen(_keyGen, obj, cb)
-  //   } else {
-  //     redisClient.set(_keyGen, 0, (err, reply) => {
-  //       if(err) throw new Error(err)
-  //       console.log('<roomdb.js createUniqueGroupId> After setting _keyGen reply = ', reply)
-  //       if(reply === 'OK')
-  //       Rooms.getKeyGen(_keyGen, obj, cb)
-  //     })
-  //   }
-  // }
-
   static createUniqueGroupId (obj, cb) {
     redisClient.get(_keyGen, (err, val) => {
       if(err) throw new Error(err)

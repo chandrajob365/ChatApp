@@ -12,7 +12,6 @@ exports.form = (req, res, err) => {
 }
 
 exports.success = (req, res, next) => {
-  console.log('<accountKitLogin.js, success > req.body.csrf = ', req.body.csrf, ' appInfo.csrf_guid = ', appInfo.csrf_guid)
  // CSRF Check
   if (req.body.csrf === 'csrf') { // appInfo.csrf_guid) {
     let appAccessToken = ['AA', appInfo.appID, appInfo.appSecret].join('|')
@@ -24,19 +23,15 @@ exports.success = (req, res, next) => {
     // exchange tokens
     let tokenExchangeUrl = appInfo.token_exchange_base_url + '?' + Querystring.stringify(params)
     Request.get({url: tokenExchangeUrl, json: true}, function (err, resp, respBody) {
-      console.log('<accountKitLogin.js, success > inside tokenExchangeUrl respBody -> ', respBody)
       if (err) throw new Error(err)
       let view = {
         user_access_token: respBody.access_token,
         expires_at: respBody.expires_at,
         user_id: respBody.id
       }
-      console.log('<accountKitLogin.js, success > view -> ', view)
       // get account details at /me endpoint
       let meEndpointUrl = appInfo.me_endpoint_base_url + '?access_token=' + respBody.access_token
       Request.get({ url: meEndpointUrl, json: true }, function (err, resp, respBody) {
-        console.log('<accountKitLogin.js, success > inside meEndpointUrl respBody -> ', respBody)
-        // send login_success.html
         if (err) throw new Error(err)
         if (respBody.phone) {
           view.phone_num = respBody.phone.number
@@ -52,22 +47,11 @@ exports.success = (req, res, next) => {
 }
 
 const checkForPhoneNumberAndRedirect = (phoneNumber, req, res, next) => {
-    UserDB.findByPhoneNumber(phoneNumber, (err, user) => {
-      console.log('user from db ->', user)
-      if(err) return next(err)
-      console.log('user->', user)
-      if (user === undefined) {
-        console.log('<accountKitLogin.js checkForPhoneNumberAndRedirect > User is undefined')
-        return res.render('newUser', {phoneNumber: phoneNumber})
-      }
-      req.session.user = user
-      return res.redirect('/chatRelay')
-    })
-}
-
-/* exports.logout = (req, res, next) => {
-  req.session.destroy((err) => {
-    if(err) throw err
-    res.redirect('/')
+  UserDB.findByPhoneNumber(phoneNumber, (err, user) => {
+    if (err) return next(err)
+    if (user === undefined)
+      return res.render('newUser', {phoneNumber: phoneNumber})
+    req.session.user = user
+    return res.redirect('/chatRelay')
   })
-} */
+}

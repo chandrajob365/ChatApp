@@ -18,160 +18,112 @@ class Rooms {
       Rooms.saveUserDetailList(obj, groupId)
       Rooms.saveGroupAdminSet(obj, groupId)
       Rooms.saveGroupUserList(obj)
-      if (typeof (cb) === typeof (Function)) {
-        console.log('<roomdb.js saveGroupDetail > type of cb is callback')
-        cb(groupId)
-      }
+      if (typeof (cb) === typeof (Function)) cb(groupId)
     })
   }
   static createUniqueGroupId (obj, cb) {
     redisClient.get(_keyGen, (err, val) => {
-      if(err) throw new Error(err)
-      console.log('<roomdb.js createUniqueGroupId> val = ', val)
-      if(val)
-      {
-        console.log('<roomdb.js createUniqueGroupId> If part')
-        Rooms.getKeyGen(_keyGen, obj, cb)
-      } else {
-        console.log('<roomdb.js createUniqueGroupId> Else part')
+      if (err) throw new Error(err)
+      if (val) Rooms.getKeyGen(_keyGen, obj, cb)
+      else {
         redisClient.set(_keyGen, 0, (err, reply) => {
-          if(err) throw new Error(err)
-          console.log('<roomdb.js createUniqueGroupId> After setting _keyGen reply = ', reply)
-          if(reply === 'OK')
-          Rooms.getKeyGen(_keyGen, obj, cb)
+          if (err) throw new Error(err)
+          if (reply === 'OK') Rooms.getKeyGen(_keyGen, obj, cb)
         })
       }
     })
   }
 
   static getKeyGen (_keyGen, obj, cb) {
-    console.log('<roomdb.js getKeyGen> Entry')
     redisClient.get(_keyGen, (err, val) => {
-      if(err) throw new Error(err)
-      console.log('<roomdb.js getKeyGen> keyGen val = ', val)
+      if (err) throw new Error(err)
       if (val) {
         redisClient.INCR(_keyGen)
-        // console.log('<roomdb.js getKeyGen> incrementedVal = ', incrementedVal)
         redisClient.get(_keyGen, (err, incrementedVal) => {
-          if(err) throw new Error(err)
-            console.log('<roomdb.js getKeyGen> incrementedVal = ', incrementedVal, ' groupName = ', obj.groupName)
-            redisClient.hmset(_groupIdSet, incrementedVal, obj.groupName)
-            obj.groupId = incrementedVal
-            cb(incrementedVal)
-          })
+          if (err) throw new Error(err)
+          redisClient.hmset(_groupIdSet, incrementedVal, obj.groupName)
+          obj.groupId = incrementedVal
+          cb(incrementedVal)
+        })
       }
     })
   }
   static getGroupName (groupId, cb) {
     redisClient.hmget(_groupIdSet, groupId, (err, groupName) => {
-      console.log('<roomdb.js getGroupName> groupId = ', groupId, ' groupName= ', groupName)
-      if(err) throw new Error(err)
+      if (err) throw new Error(err)
       cb(groupName[0])
     })
   }
   static saveGroupAdminSet (obj, groupId, cb) {
-      redisClient.hmset(_groupAdminSet, groupId, obj.admin, (err, reply) => {
-        if(err) throw new Error(err)
-        if (typeof (cb) === typeof (Function)) {
-          console.log('<roomdb.js saveGroupAdminSet > type of cb is callback')
-          cb()
-        }
-      })
+    redisClient.hmset(_groupAdminSet, groupId, obj.admin, (err, reply) => {
+      if (err) throw new Error(err)
+      if (typeof (cb) === typeof (Function)) cb()
+    })
   }
   static delGroupAdminSet (groupObj, cb) {
-    console.log('<roomdb.js updateAdminSet > Entry')
     redisClient.HDEL(_groupAdminSet, groupObj.groupId, (err, reply) => {
-      if(err) throw new Error(err)
-      // Rooms.saveGroupAdminSet(obj, groupId)
-      if (typeof (cb) === typeof (Function)) {
-        console.log('<roomdb.js updateAdminSet > type of cb is callback')
-        cb()
-      }
+      if (err) throw new Error(err)
+      if (typeof (cb) === typeof (Function))cb()
     })
   }
   static saveGroupUserList (obj, cb) {
     obj.users.forEach(user => {
       redisClient.rpush(obj.groupId.concat(_userExtn), user)
     })
-    if (typeof (cb) === typeof (Function)) {
-      console.log('<roomdb.js saveGroupUserList > type of cb is callback')
-      cb()
-    }
+    if (typeof (cb) === typeof (Function)) cb()
   }
 
   static getGroupDetailList (groupId, cb) {
-    console.log('<roomdb.js getGroupDetailList > Entry groupId = ', groupId)
     redisClient.lrange(groupId.concat(_userExtn), 0, -1, (err, userList) => {
-      if(err) throw new Error(err)
-      console.log('<roomdb.js getGroupDetailList > users in group = ', userList)
+      if (err) throw new Error(err)
       cb(userList)
     })
   }
   static getGroupAdminName (groupId, cb) {
-    console.log('<roomdb.js getGroupAdminName > Entry groupId = ', groupId)
     redisClient.hmget(_groupAdminSet, groupId, (err, adminName) => {
-      if(err) throw new Error(err)
-      console.log('<roomdb.js getGroupAdminName >result from DB adminName -> ', adminName)
+      if (err) throw new Error(err)
       cb(adminName[0])
     })
   }
   static deleteUserFromGroup (userName, groupId, cb) {
-    console.log('<roomdb.js deleteUserFromGroup > Entry userName = ', userName, ' groupId = ', groupId)
     redisClient.lrem(groupId.concat(_userExtn), 0, userName, (err, reply) => {
-      if(err) throw new Error(err)
+      if (err) throw new Error(err)
       cb(reply)
     })
   }
   static saveUserDetailList (obj, cb) {
-    console.log('<roomdb.js saveUserDetailList> obj -> ', obj)
-    let groupName = obj.groupName
+    // let groupName = obj.groupName
     let users = obj.users
-    // if(obj.admin && (users.indexOf(obj.admin) === -1))
-    //   users.push(obj.admin)
     for (let user of users) {
-      console.log('<roomdb.js saveUserDetailList> user = ', user)
       redisClient.rpush(user.concat(_groupExtn), obj.groupId)
     }
-    if (typeof (cb) === typeof (Function)) {
-      console.log('<roomdb.js saveUserDetailList> type of cb is callback')
-      cb()
-    }
+    if (typeof (cb) === typeof (Function)) cb()
   }
   static getUserDetailList (userName, cb) {
     redisClient.lrange(userName.concat(_groupExtn), 0, -1, (err, idList) => {
-      console.log('<roomdb.js, getUserDetailList > GroupIdList =  ', idList)
       if (err) throw new Error(err)
-      if(idList.length > 0) {
-        console.log('<roomdb.js, getUserDetailList > If part GroupIdList =  ', idList)
-        Rooms.getGroupNames(idList, cb)
-      } else {
-        console.log('<roomdb.js, getUserDetailList > Else part GroupIdList =  ', idList)
+      if (idList.length > 0) Rooms.getGroupNames(idList, cb)
+      else {
         cb(idList)
       }
-
     })
   }
   static getGroupNames (idList, cb) {
     let groupObjList = []
-    for(let groupId of idList) {
+    for (let groupId of idList) {
       redisClient.hmget(_groupIdSet, groupId, (err, groupName) => {
-        if(err) throw new Error(err)
-        console.log('<roomdb.js getGroupNames> groupId = ', groupId, ' groupName = ', groupName)
+        if (err) throw new Error(err)
         groupObjList.push({
           groupName: groupName[0],
           groupId: groupId
         })
-        if(idList.length === groupObjList.length) {
-          console.log('<roomdb.js getGroupNames> idList.length === groupObjList.length ==> ', (idList.length === groupObjList.length))
-          cb(groupObjList)
-        }
+        if (idList.length === groupObjList.length) cb(groupObjList)
       })
     }
   }
   static deleteGroupFromUserList (userName, groupId, cb) {
-    console.log('<roomdb.js deleteGroupFromUserList > Entry userName = ', userName, ' groupId = ', groupId)
     redisClient.lrem(userName.concat(_groupExtn), 0, groupId, (err, reply) => {
-      if(err) throw new Error(err)
+      if (err) throw new Error(err)
       cb(reply)
     })
   }
@@ -189,11 +141,8 @@ class Rooms {
     })
   }
   static getGroupMessages (groupId, cb) {
-    console.log('<roomdb.js getGroupMessages > groupId -> ', groupId)
     redisClient.lrange(groupId.concat(_messages), 0, -1, (err, messagesList) => {
       if (err) throw new Error(err)
-      console.log('<roomdb.js getGroupMessages > messagesList = ', messagesList)
-      console.log('<roomdb.js getGroupMessages > messages = ', messagesList)
       cb(messagesList)
     })
   }

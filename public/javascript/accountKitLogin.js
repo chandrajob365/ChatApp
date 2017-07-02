@@ -1,5 +1,5 @@
 // initialize Account Kit with CSRF protection
-AccountKit_OnInteractive = function() {
+AccountKit_OnInteractive = function () {
   AccountKit.init({
     appId: '169812573551460',
     state: 'csrf',
@@ -10,10 +10,8 @@ AccountKit_OnInteractive = function() {
 }
 
 // login callback
-function loginCallback(response) {
-  console.log('<accountKitLogin.js , loginCallback > response ----> ', response)
+function loginCallback (response) {
   if (response.status === 'PARTIALLY_AUTHENTICATED') {
-    console.log('<accountKitLogin.js , loginCallback > response.code = ', response.code, ' response.state = ', response.state)
     document.getElementById('code').value = response.code
     document.getElementById('csrf').value = response.state
     document.getElementById('login_success').submit()
@@ -26,6 +24,6 @@ function loginCallback(response) {
 }
 
 // phone form submission handler
-function smsLogin() {
+function smsLogin () {
   AccountKit.login('PHONE', {}, loginCallback)
 }

@@ -3,12 +3,19 @@ const Request = require('request')
 const Querystring = require('queryString')
 const UserDB = require('../db/userdb').Users
 exports.form = (req, res, err) => {
-  let view = {
-    appId: appInfo.appId,
-    csrf: appInfo.csrf_guid,
-    version: appInfo.account_kit_api_version
+  if (req.session && req.session.user) {
+    console.log('session-cookie maxage = ', req.session.cookie.maxAge)
+    console.log('Exist userName = ', req.session.user.userName)
+    res.redirect('/chatRelay')
+  } else {
+    console.log('req.session doesn\'t exist.....')
+    res.render('accountKitLogin', {data: {
+      appId: appInfo.appId,
+      csrf: appInfo.csrf_guid,
+      version: appInfo.account_kit_api_version
+    }
+    })
   }
-  res.render('accountKitLogin', {data: view})
 }
 
 exports.success = (req, res, next) => {
@@ -52,22 +59,18 @@ exports.success = (req, res, next) => {
 }
 
 const checkForPhoneNumberAndRedirect = (phoneNumber, req, res, next) => {
-    UserDB.findByPhoneNumber(phoneNumber, (err, user) => {
-      console.log('user from db ->', user)
-      if(err) return next(err)
-      console.log('user->', user)
-      if (user === undefined) {
-        console.log('<accountKitLogin.js checkForPhoneNumberAndRedirect > User is undefined')
-        return res.render('newUser', {phoneNumber: phoneNumber})
-      }
-      req.session.user = user
-      return res.redirect('/chatRelay')
-    })
-}
-
-/* exports.logout = (req, res, next) => {
-  req.session.destroy((err) => {
-    if(err) throw err
-    res.redirect('/')
+  UserDB.findByPhoneNumber(phoneNumber, (err, user) => {
+    console.log('user from db ->', user)
+    if (err) return next(err)
+    console.log('user->', user)
+    if (user === undefined) {
+      console.log('<accountKitLogin.js checkForPhoneNumberAndRedirect > User is undefined')
+      return res.render('newUser', {phoneNumber: phoneNumber})
+    }
+    req.session.user = user
+    let hour = 86400000
+    req.session.cookie.expires = new Date(Date.now() + hour)
+    req.session.cookie.maxAge = hour
+    return res.redirect('/chatRelay')
   })
-} */
+}

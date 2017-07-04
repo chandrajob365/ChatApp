@@ -12,9 +12,13 @@ const Guid = require('guid')
 
 const chat = require('./routes/chat')
 const accountKitLogin = require('./routes/accountKitLogin')
-const appInfo = require('./config/app_config.json')
-const newUser = require('./routes/newUser')
 
+
+const newUser = require('./routes/newUser')
+let appInfo
+if (process.env.NODE_ENV === 'development') {
+  appInfo = require('./config/app_config.json')
+}
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')

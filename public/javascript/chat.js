@@ -1,12 +1,12 @@
 const socket = io.connect()
-var currentGroupId = 0 // !! update currentGroupId as when user switches to diff room !!
+var activeGroupId = 0 // !! update activeGroupId as when user switches to diff room !!
 document.addEventListener('DOMContentLoaded', function () {
   const field = document.getElementById('data')
   const sendButton = document.getElementById('send')
 
   socket.on('setDefaultGroupId', (groupName, groupId) => {
     console.log('<client chat.js Event- setDefaultGroupId> groupId = ', groupId)
-    currentGroupId = groupId
+    activeGroupId = groupId
     populateCurrentGroupName(groupName)
   })
   socket.on('disableMessageSenderBoxAndSendButton', () => {
@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
     sendButton.disabled = false
   })
   sendButton.onclick = function () {
-    console.log('<client chat.js onclick> currentGroupId = ', currentGroupId)
-    if (currentGroupId !== 0) {
+    console.log('<client chat.js onclick> activeGroupId = ', activeGroupId)
+    if (activeGroupId !== 0) {
       socket.emit('chatMessage', {
-        groupId: currentGroupId,
+        groupId: activeGroupId,
         text: field.value
       })
     }
@@ -29,10 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return false
   }
   socket.on('chatMessage', (msg) => {
-    console.log('<chat.js chatMessage> currentGroupId = ', currentGroupId)
+    console.log('<chat.js chatMessage> activeGroupId = ', activeGroupId)
     console.log('<chat.js chatMessage> msg.groupName = ', msg.groupName)
-    if (currentGroupId === msg.groupId) {
-      console.log('<chat.js chatMessage> currentGroupId === msg.groupName')
+    pushToLocalStorage(msg.groupId, {sender: msg.sender,
+      text: msg.text
+    })
+    if (activeGroupId === msg.groupId) {
+      console.log('<chat.js chatMessage> activeGroupId === msg.groupName')
       populateCurrentGroupName(msg.groupName)
       populateMessagePannel(msg)
     }
@@ -43,9 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
     sendButton.disabled = false
     console.log('<chat.js>Inside createGroup -> ', groupObj)
     populateGroup(groupObj.groupName, groupObj.groupId)
-    console.log('<chat.js>Inside createGroup -> ', currentGroupId)
-    if (currentGroupId === 0) {
-      currentGroupId = groupObj.groupId
+    console.log('<chat.js>Inside createGroup -> ', activeGroupId)
+    if (activeGroupId === 0) {
+      activeGroupId = groupObj.groupId
       populateCurrentGroupName(groupObj.groupName)
     }
     // !! < Method to display system messages > Add method to relay welcome message to all the member of group !!
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* Creates new group in view of all the users added to that group */
 const populateGroup = (groupName, groupId) => {
   let groupUserWrapper = document.getElementById('groupsAndUsers')
-    let div1 = document.createElement('div')
+  let div1 = document.createElement('div')
     div1.classList.add('columns')
     div1.setAttribute('id', groupId)
 
@@ -90,11 +93,11 @@ const populateGroup = (groupName, groupId) => {
   }
   const switchGroup = (groupName, groupId) => {
     console.log('Inside switchGroup <chat.js> client side groupName -> ', groupName, ' groupId = ', groupId)
-    if (currentGroupId !== groupId) {
-      currentGroupId = groupId
+    if (activeGroupId !== groupId) {
+      activeGroupId = groupId
       document.getElementById('data').disabled = false
       document.getElementById('send').disabled = false
-      console.log('Inside switchGroup <chat.js> client side currentGroupId -> ', currentGroupId)
+      console.log('Inside switchGroup <chat.js> client side activeGroupId -> ', activeGroupId)
         clearMessagePannel()
         resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
       socket.emit('switchGroup', {
@@ -102,13 +105,13 @@ const populateGroup = (groupName, groupId) => {
         groupId: groupId
       })
     }
-    console.log('currentGroupId and group to be switched are same')
+    console.log('activeGroupId and group to be switched are same')
 
   }
   socket.on('populateGroupWithEmptyMessageList', groupObj => {
-    console.log('Inside of populateGroupName <chat.js client side> currentGroupId = ', currentGroupId, 'groupObj.groupId = ', groupObj.groupId)
-    if(currentGroupId === groupObj.groupId) {
-      console.log('<chat.js chatMessage> currentGroupId === groupObj.groupId')
+    console.log('Inside of populateGroupName <chat.js client side> activeGroupId = ', activeGroupId, 'groupObj.groupId = ', groupObj.groupId)
+    if(activeGroupId === groupObj.groupId) {
+      console.log('<chat.js chatMessage> activeGroupId === groupObj.groupId')
       populateCurrentGroupName(groupObj.groupName)
     }
   })
@@ -159,8 +162,10 @@ const createGroup = () => {
 
 const populateCurrentGroupName = groupName => {
   let currentGroup = document.getElementById('currentGroup')
-  currentGroup.style.cursor = 'pointer'
-  currentGroup.innerHTML = groupName
+  // if(currentGroup.innerHTML !== groupName) {
+    currentGroup.style.cursor = 'pointer'
+    currentGroup.innerHTML = groupName
+  // }
 }
 
 const populateMessagePannel = msg => {
@@ -219,7 +224,7 @@ const displayGroupInfoCard = () => {
   console.log('Inside displayGroupInfoCard currentGroupName -> ', currentGroupName)
   if(document.getElementById('groupInfoPannel').style.display === 'none')
     socket.emit('getGroupDetail', {
-      groupId: currentGroupId,
+      groupId: activeGroupId,
       groupName: currentGroupName
     })
 }
@@ -352,7 +357,7 @@ const removeMemberFromGroup = userName => {
   // removeUserFromGroupView(userName)
   socket.emit('removeMemberFromGroup', {
     userName: userName,
-    groupId: currentGroupId
+    groupId: activeGroupId
   })
 }
 const removeUserFromGroupView = userName => {
@@ -371,26 +376,24 @@ const removeGroupRelatedContent = groupId => {
   let groupIdWrapperDiv = document.getElementById(groupId)
   groupIdWrapperDiv.nextSibling.remove()
   groupIdWrapperDiv.parentNode.removeChild(groupIdWrapperDiv)
-  if(currentGroupId === groupId) {
+  if(activeGroupId === groupId) {
     document.getElementById('currentGroup').innerHTML = ''
     document.getElementById('messageContent').innerHTML = ''
-    // document.getElementById('currentGroup').parentNode.remove(document.getElementById('currentGroup'))
-    // document.getElementById('messageContent').parentNode.remove(document.getElementById('messageContent'))
     let groupInfoPannel = document.getElementById('groupInfoPannel')
     if(groupInfoPannel.style.display === 'block') {
       resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
     }
 
-    currentGroupId = 0
+    activeGroupId = 0
     document.getElementById('data').disabled = true
     document.getElementById('send').disabled = true
   }
 
 }
 socket.on('removeMemberDetailFromGroupInfoPannel', userGroupObj => {
-  if(currentGroupId === userGroupObj.groupId && document.getElementById('groupInfoPannel').style.display === 'block') {
+  if(activeGroupId === userGroupObj.groupId && document.getElementById('groupInfoPannel').style.display === 'block') {
     console.log('client chat.js removeMemberDetailFromGroupInfoPannel userGroupObj.groupId = ', userGroupObj.groupId)
-    console.log('client chat.js removeMemberDetailFromGroupInfoPannel currentGroupId = ', currentGroupId)
+    console.log('client chat.js removeMemberDetailFromGroupInfoPannel activeGroupId = ', activeGroupId)
     console.log('client chat.js removeMemberDetailFromGroupInfoPannel document.getElementById("groupInfoPannel").style.display = ', document.getElementById('groupInfoPannel').style.display)
 
     removeUserFromGroupView(userGroupObj.userName)
@@ -401,7 +404,7 @@ socket.on('removeMemberDetailFromGroupInfoPannel', userGroupObj => {
 
 /* "Add-Particapant" Modal Related Start */
 const showAndPopulateParticipantModal = modalId => {
-  socket.emit('getNonMemberNames', currentGroupId)
+  socket.emit('getNonMemberNames', activeGroupId)
   showModal(modalId)
 }
 const closeAddParticipantModal = modalId => {
@@ -456,7 +459,7 @@ const addNewParticipant = () => {
   if (newMembersListToBeAdded.length > 0) {
     socket.emit('addNewMembersToGroup', {
       users: newMembersListToBeAdded,
-      groupId: currentGroupId
+      groupId: activeGroupId
     })
   }
   console.log('<client chat.js addNewParticipant> newMembersListToBeAdded = ', newMembersListToBeAdded)
@@ -464,15 +467,15 @@ const addNewParticipant = () => {
 socket.on('updateGroupInfoListwithNewUsers', groupUsersObj => {
   let groupInfoPannel = document.getElementById('groupInfoPannel')
   console.log('<client chat.js updateGroupInfoListwithNewUsers >, groupInfoObj = ', groupUsersObj)
-  if (currentGroupId === groupUsersObj.groupId && groupInfoPannel.style.display === 'block') {
+  if (activeGroupId === groupUsersObj.groupId && groupInfoPannel.style.display === 'block') {
     populateAdminGroupInfoPannel(groupUsersObj)
   }
 })
 socket.on('setCurrentRoom', groupId => {
-  console.log('<client chat.js setCurrentRoom > groupId = ', groupId, 'currentGroupId = ', currentGroupId)
-  if (currentGroupId === 0) {
-    currentGroupId = groupId
-    console.log('<client chat.js setCurrentRoom > After setting groupId = ', groupId, 'currentGroupId = ', currentGroupId)
+  console.log('<client chat.js setCurrentRoom > groupId = ', groupId, 'activeGroupId = ', activeGroupId)
+  if (activeGroupId === 0) {
+    activeGroupId = groupId
+    console.log('<client chat.js setCurrentRoom > After setting groupId = ', groupId, 'activeGroupId = ', activeGroupId)
   }
 })
 socket.on('populateCurrentGroupName', groupName => {
@@ -511,12 +514,12 @@ const clearMessagePannel = () => {
 const exitGroup = () => {
   console.log('<client chat.js exitGroup > Entry')
   socket.emit('exitGroup', {
-    groupId: currentGroupId
+    groupId: activeGroupId
   })
 }
 socket.on('repaintGroupInfo', groupInfoObj => {
   let groupInfoPannel = document.getElementById('groupInfoPannel')
-  if(groupInfoObj.groupId === currentGroupId && groupInfoPannel.style.display === 'block') {
+  if(groupInfoObj.groupId === activeGroupId && groupInfoPannel.style.display === 'block') {
     console.log('<client side chat.js ##event## repaintGroupInfo > Inside if cond ')
     emptyMemberListPannel()
     repaintGroupInfo(groupInfoObj)
@@ -528,3 +531,66 @@ const repaintGroupInfo = groupInfoObj => {
   populateAdminGroupInfoPannel(groupInfoObj)
 }
  /* Exit group End */
+
+/* localStorage Related Start */
+
+// window.onbeforeunload = function (e) {
+//   console.log('disconnecting User Inside onbeforeunload')
+//   if(activeGroupId !== 0) {
+//     localStorage.setItem(activeGroupId, 'Group1')
+//   }
+// }
+socket.on('chkAndFetchLocalStorage', groupObj => {
+  if (window.localStorage && activeGroupId === groupObj.groupId) {
+    let messageList = localStorage.getItem(groupObj.groupId)
+    console.log('<chkAndFetchLocalStorage > messageList = ', messageList)
+    if (messageList) {
+      console.log('<chkAndFetchLocalStorage > If part messageList.length = ', messageList.length)
+      console.log('<chkAndFetchLocalStorage > If part messageList = ', messageList)
+      console.log('<chkAndFetchLocalStorage > If part parsed messageList = ', JSON.parse(messageList))
+      parseAndPopulateMsgPannel(groupObj, JSON.parse(messageList))
+      chkServerForExtraGroupMsgs(groupObj, (JSON.parse(messageList)).length)
+    } else {
+      console.log('<chkAndFetchLocalStorage > Else part messageList = ', messageList)
+      socket.emit('fetchMessageFromDB', groupObj)
+    }
+  }
+})
+const parseAndPopulateMsgPannel = (groupObj, messageList) => {
+  console.log('parseAndPopulateMsgPannel ENTRY')
+  for (let messagesListObj of messageList) {
+    console.log('parseAndPopulateMsgPannel ENTRY  messagesListObj = ', messagesListObj)
+    let parsedMessageObj = JSON.parse(messagesListObj)
+    console.log('messagesListObj = ', messagesListObj)
+    console.log('parsedMessageObj = ', parsedMessageObj)
+    populateCurrentGroupName(groupObj.groupName)
+    populateMessagePannel(parsedMessageObj)
+  }
+}
+const chkServerForExtraGroupMsgs = (groupObj, messageListLength) => {
+  console.log('chkServerForExtraGroupMsgs ENTRY messageListLength = ', messageListLength)
+  socket.emit('chkServerForExtraGroupMsgs', {
+    groupObj: groupObj,
+    messageListLength: messageListLength
+  })
+}
+socket.on('messageList', msg => {
+  pushToLocalStorage(msg.groupId, msg.messageList)
+  parseAndPopulateMsgPannel(msg, msg.messageList)
+})
+const pushToLocalStorage = (groupId, messageList) => {
+  console.log('<pushToLocalStorage> Entry JSON.stringify(messageList) = ', JSON.stringify(messageList))
+  if (window.localStorage) {
+    let msgs = JSON.parse(localStorage.getItem(groupId))
+    console.log('<pushToLocalStorage> msgs = ', msgs)
+    if(msgs){
+      console.log('<pushToLocalStorage> Inside If JSON.parse(msgs) = ', msgs.length)
+      msgs[msgs.length]=JSON.stringify(messageList)
+      localStorage.setItem(groupId, JSON.stringify(msgs))
+    } else{
+      localStorage.setItem(groupId, JSON.stringify(messageList))
+    }
+
+  }
+}
+/* localStorage Related End */

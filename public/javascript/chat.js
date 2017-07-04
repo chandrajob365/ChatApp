@@ -100,13 +100,14 @@ const populateGroup = (groupName, groupId) => {
       console.log('Inside switchGroup <chat.js> client side activeGroupId -> ', activeGroupId)
         clearMessagePannel()
         resizeChatUIAndHideGroupInfoPannel('groupInfoPannel')
+        console.log('<switchGroup > After resizeChatUIAndHideGroupInfoPannel AND Before chkAndFetchLocalStorage')
+        // chkAndFetchLocalStorage({groupName: groupName, groupId: groupId})
+
       socket.emit('switchGroup', {
         groupName: groupName,
         groupId: groupId
       })
     }
-    console.log('activeGroupId and group to be switched are same')
-
   }
   socket.on('populateGroupWithEmptyMessageList', groupObj => {
     console.log('Inside of populateGroupName <chat.js client side> activeGroupId = ', activeGroupId, 'groupObj.groupId = ', groupObj.groupId)
@@ -534,37 +535,48 @@ const repaintGroupInfo = groupInfoObj => {
 
 /* localStorage Related Start */
 
-// window.onbeforeunload = function (e) {
-//   console.log('disconnecting User Inside onbeforeunload')
-//   if(activeGroupId !== 0) {
-//     localStorage.setItem(activeGroupId, 'Group1')
-//   }
-// }
 socket.on('chkAndFetchLocalStorage', groupObj => {
   if (window.localStorage && activeGroupId === groupObj.groupId) {
-    let messageList = localStorage.getItem(groupObj.groupId)
-    console.log('<chkAndFetchLocalStorage > messageList = ', messageList)
-    if (messageList) {
-      console.log('<chkAndFetchLocalStorage > If part messageList.length = ', messageList.length)
-      console.log('<chkAndFetchLocalStorage > If part messageList = ', messageList)
-      console.log('<chkAndFetchLocalStorage > If part parsed messageList = ', JSON.parse(messageList))
-      parseAndPopulateMsgPannel(groupObj, JSON.parse(messageList))
-      chkServerForExtraGroupMsgs(groupObj, (JSON.parse(messageList)).length)
-    } else {
-      console.log('<chkAndFetchLocalStorage > Else part messageList = ', messageList)
-      socket.emit('fetchMessageFromDB', groupObj)
-    }
+    chkAndFetchLocalStorage(groupObj)
   }
 })
+const chkAndFetchLocalStorage = groupObj => {
+  console.log('<chkAndFetchLocalStorage> groupObj.groupId = ', groupObj.groupId)
+  let messageList = localStorage.getItem(groupObj.groupId)
+  console.log('<chkAndFetchLocalStorage > messageList = ', messageList)
+  if (messageList) {
+    console.log('<chkAndFetchLocalStorage > If part messageList.length = ', messageList.length)
+    console.log('<chkAndFetchLocalStorage > If part messageList = ', messageList)
+    console.log('<chkAndFetchLocalStorage > If part parsed messageList = ', JSON.parse(messageList))
+    parseAndPopulateMsgPannel(groupObj, JSON.parse(messageList))
+    if(JSON.parse(messageList) instanceof Array) {
+      chkServerForExtraGroupMsgs(groupObj, (JSON.parse(messageList)).length)
+    } else {
+      chkServerForExtraGroupMsgs(groupObj, 1)
+    }
+  } else {
+    console.log('<chkAndFetchLocalStorage > Else part messageList = ', messageList)
+    socket.emit('fetchMessageFromDB', groupObj)
+  }
+}
 const parseAndPopulateMsgPannel = (groupObj, messageList) => {
-  console.log('parseAndPopulateMsgPannel ENTRY')
-  for (let messagesListObj of messageList) {
-    console.log('parseAndPopulateMsgPannel ENTRY  messagesListObj = ', messagesListObj)
-    let parsedMessageObj = JSON.parse(messagesListObj)
-    console.log('messagesListObj = ', messagesListObj)
-    console.log('parsedMessageObj = ', parsedMessageObj)
+  console.log('<parseAndPopulateMsgPannel> ENTRY')
+  console.log('<parseAndPopulateMsgPannel> messageList = ', messageList)
+  console.log('<parseAndPopulateMsgPannel> messageList.length = ', messageList.length)
+  if(messageList && messageList instanceof Array) {
+      console.log('parseAndPopulateMsgPannel ENTRY  messageList instanceof Array = ', (messageList instanceof Array))
+    for (let messagesListObj of messageList) {
+      console.log('parseAndPopulateMsgPannel ENTRY  messagesListObj = ', messagesListObj)
+      let parsedMessageObj = JSON.parse(messagesListObj)
+      console.log('messagesListObj = ', messagesListObj)
+      console.log('parsedMessageObj = ', parsedMessageObj)
+      populateCurrentGroupName(groupObj.groupName)
+      populateMessagePannel(parsedMessageObj)
+    }
+  } else if (messageList instanceof Object) {
+    console.log('parseAndPopulateMsgPannel ENTRY  messageList instanceof Object = ', (messageList instanceof Object))
     populateCurrentGroupName(groupObj.groupName)
-    populateMessagePannel(parsedMessageObj)
+    populateMessagePannel(messageList)
   }
 }
 const chkServerForExtraGroupMsgs = (groupObj, messageListLength) => {
@@ -579,18 +591,23 @@ socket.on('messageList', msg => {
   parseAndPopulateMsgPannel(msg, msg.messageList)
 })
 const pushToLocalStorage = (groupId, messageList) => {
-  console.log('<pushToLocalStorage> Entry JSON.stringify(messageList) = ', JSON.stringify(messageList))
+  console.log('<pushToLocalStorage> Entry messageList = ', messageList)
   if (window.localStorage) {
     let msgs = JSON.parse(localStorage.getItem(groupId))
-    console.log('<pushToLocalStorage> msgs = ', msgs)
-    if(msgs){
-      console.log('<pushToLocalStorage> Inside If JSON.parse(msgs) = ', msgs.length)
-      msgs[msgs.length]=JSON.stringify(messageList)
-      localStorage.setItem(groupId, JSON.stringify(msgs))
-    } else{
+    console.log('<pushToLocalStorage >From local Storage msgs = ', msgs)
+    if (messageList instanceof Array) {
+      console.log('<pushToLocalStorage> messageList instanceof Array')
       localStorage.setItem(groupId, JSON.stringify(messageList))
+    } else if (msgs && messageList instanceof Object) {
+      console.log('<pushToLocalStorage>From local Storage msgs NOT NULL & messageList instanceof Object < msgs.length = ', msgs.length, ' >')
+      msgs[msgs.length] = JSON.stringify(messageList)
+      localStorage.setItem(groupId, JSON.stringify(msgs))
+    } else if (messageList instanceof Object) {
+      console.log('<pushToLocalStorage> messageList instanceof Object')
+      let arr = []
+      arr.push(JSON.stringify(messageList))
+      localStorage.setItem(groupId, JSON.stringify([JSON.stringify(messageList)]))
     }
-
   }
 }
 /* localStorage Related End */

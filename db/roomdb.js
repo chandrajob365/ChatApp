@@ -1,5 +1,9 @@
 const redis = require('redis')
-const redisClient = redis.createClient()
+let DB_PORT = process.env.OPENSHIFT_redis_DB_PORT
+let DB_PASSWORD = process.env.OPENSHIFT_redis_DB_PASSWORD
+let DB_HOST = process.env.OPENSHIFT_redis_DB_HOST
+
+const redisClient = redis.createClient('redis://:' + DB_PASSWORD+'@'+DB_HOST + ':' +DB_PORT)
 const _groupExtn = '_grp_'
 const _userExtn = '_users_'
 const _messages = '_msgs_'

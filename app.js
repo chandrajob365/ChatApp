@@ -8,11 +8,12 @@ const session = require('express-session')({
   resave: true,
   saveUninitialized: true
 })
-const Guid = require('guid')
+
 
 const chat = require('./routes/chat')
 const accountKitLogin = require('./routes/accountKitLogin')
-const appInfo = require('./config/app_config.json')
+
+
 const newUser = require('./routes/newUser')
 
 // view engine setup
@@ -29,7 +30,6 @@ app.use(bodyParser.urlencoded({
 app.use(session)
 /* Account Kit related */
 
-appInfo.csrf_guid = Guid.raw()
 app.get('/chatRelay', chat.ui)
 app.get('/', accountKitLogin.form)
 app.post('/loginSucess', accountKitLogin.success)

@@ -15,10 +15,19 @@ const accountKitLogin = require('./routes/accountKitLogin')
 
 
 const newUser = require('./routes/newUser')
-let appInfo
-if (process.env.NODE_ENV === 'development') {
-  appInfo = require('./config/app_config.json')
-}
+const appInfo = {}
+// if (process.env.NODE_ENV === 'development') {
+//   appInfo = require('./config/app_config.json')
+// }
+
+appInfo.account_kit_api_version = process.env.account_kit_api_version
+appInfo.appID = process.env.appID
+appInfo.appSecret = process.env.appSecret
+appInfo.me_endpoint_base_url = process.env.me_endpoint_base_url
+appInfo.token_exchange_base_url = process.env.token_exchange_base_url
+appInfo.NODE_ENV = process.env.NODE_ENV
+
+console.log('appInfo --> ', appInfo)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')

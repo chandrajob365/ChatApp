@@ -1,5 +1,5 @@
 const Request = require('request')
-const Querystring = require('queryString')
+const Querystring = require('querystring')
 const Guid = require('guid')
 const UserDB = require('../db/userdb').Users
 exports.form = (req, res, err) => {

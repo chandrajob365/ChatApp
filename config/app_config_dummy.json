@@ -1,7 +1,0 @@
-{
-  "account_kit_api_version": "ur_app_version-number",
-  "appID": "ur_app_id",
-  "appSecret": "appSecret",
-  "me_endpoint_base_url": "https://graph.accountkit.com/v1.1/me",
-  "token_exchange_base_url": "https://graph.accountkit.com/v1.1/access_token"
-}

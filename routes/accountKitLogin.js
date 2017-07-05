@@ -1,6 +1,6 @@
-const appInfo = require('../config/app_config.json')
 const Request = require('request')
 const Querystring = require('queryString')
+const Guid = require('guid')
 const UserDB = require('../db/userdb').Users
 exports.form = (req, res, err) => {
   if (req.session && req.session.user) {
@@ -10,26 +10,26 @@ exports.form = (req, res, err) => {
   } else {
     console.log('req.session doesn\'t exist.....')
     res.render('accountKitLogin', {data: {
-      appId: appInfo.appId,
-      csrf: appInfo.csrf_guid,
-      version: appInfo.account_kit_api_version
+      appId: process.env.appID,
+      csrf: Guid.raw(),
+      version: process.env.account_kit_api_version
     }
     })
   }
 }
 
 exports.success = (req, res, next) => {
-  console.log('<accountKitLogin.js, success > req.body.csrf = ', req.body.csrf, ' appInfo.csrf_guid = ', appInfo.csrf_guid)
  // CSRF Check
-  if (req.body.csrf === 'csrf') { // appInfo.csrf_guid) {
-    let appAccessToken = ['AA', appInfo.appID, appInfo.appSecret].join('|')
+  if (req.body.csrf === 'csrf') { // GUID.raw()) {
+    console.log('<routes/accountKitLogin.js exports.success > req.body.csrf === \'csrf\' ')
+    let appAccessToken = ['AA', process.env.appID, process.env.appSecret].join('|')
     let params = {
       grant_type: 'authorization_code',
       code: req.body.code,
       access_token: appAccessToken
     }
     // exchange tokens
-    let tokenExchangeUrl = appInfo.token_exchange_base_url + '?' + Querystring.stringify(params)
+    let tokenExchangeUrl = process.env.token_exchange_base_url + '?' + Querystring.stringify(params)
     Request.get({url: tokenExchangeUrl, json: true}, function (err, resp, respBody) {
       console.log('<accountKitLogin.js, success > inside tokenExchangeUrl respBody -> ', respBody)
       if (err) throw new Error(err)
@@ -40,7 +40,7 @@ exports.success = (req, res, next) => {
       }
       console.log('<accountKitLogin.js, success > view -> ', view)
       // get account details at /me endpoint
-      let meEndpointUrl = appInfo.me_endpoint_base_url + '?access_token=' + respBody.access_token
+      let meEndpointUrl = process.env.me_endpoint_base_url + '?access_token=' + respBody.access_token
       Request.get({ url: meEndpointUrl, json: true }, function (err, resp, respBody) {
         console.log('<accountKitLogin.js, success > inside meEndpointUrl respBody -> ', respBody)
         // send login_success.html
@@ -53,6 +53,7 @@ exports.success = (req, res, next) => {
     })
   } else {
    // login failed
+   console.log('<routes/accountKitLogin.js exports.success > req.body.csrf !== \'csrf\'  LOGIN FAILED ')
     res.writeHead(200, {'Content-Type': 'text/html'})
     res.end('Something went wrong. :( ')
   }

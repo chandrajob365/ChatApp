@@ -39,8 +39,10 @@ app.post('/newUser', newUser.save)
 // http.listen(server_port, server_ip_address, () => {
 //   console.log('Server is listening at * ', server_port, ' @ ', server_ip_address)
 // })
-http.listen(3000, () => {
-   console.log('Server is listening at *  3000 ')
+let server_port = process.env.PORT
+console.log('<chat_server.js server_port = ', server_port)
+http.listen(server_port, () => {
+   console.log('Server is listening at * ', server_port)
  })
 const socket = require('./lib/chat_server')
 socket.listen(http, session)

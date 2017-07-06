@@ -68,7 +68,7 @@ const populateGroup = (groupName, groupId) => {
     div3ChildOfDiv2.classList.add('image')
     let img = document.createElement('img')
     // img.classList.add('responsive')
-    img.src = 'http://bulma.io/images/placeholders/96x96.png'
+    img.src = 'https://bulma.io/images/placeholders/96x96.png'
     div3ChildOfDiv2.appendChild(img)
     div2ChildOfDiv1.appendChild(div3ChildOfDiv2)
 
@@ -179,7 +179,7 @@ const populateMessagePannel = msg => {
   let figure = document.createElement('figure')
   figure.classList.add('image', 'is-64x64')
   let img = document.createElement('img')
-  img.src = 'http://placehold.it/128x128'
+  img.src = 'https://placehold.it/128x128'
   img.alt = 'Image'
   figure.appendChild(img)
   div1ChildOfArticle.appendChild(figure)
@@ -312,7 +312,7 @@ const paintMemberImage = div1Outter => {
   let div3ChildOfDiv2 = document.createElement('div')
   div3ChildOfDiv2.classList.add('image')
   let img = document.createElement('img')
-  img.src = 'http://bulma.io/images/placeholders/96x96.png'
+  img.src = 'https://bulma.io/images/placeholders/96x96.png'
 
   div3ChildOfDiv2.appendChild(img)
   div2ChildOfDiv1.appendChild(div3ChildOfDiv2)

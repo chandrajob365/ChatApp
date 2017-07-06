@@ -2,40 +2,227 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
-    <link rel = 'stylesheet' href = '/stylesheet/chat_ui.css'></link>
-  </head>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/chat.js"> </script>
-  <% include menu %>
-  <body>
 
-    <div id="body" >
-      <div style="width:100%">
-      <div style = "float:left; width:20%">
-        Active Users -
-        <ul id = "defaultActiveUsers"> </ul>
-        <ul id = "room1ActiveUsers" ></ul>
-        <ul id = "room2ActiveUsers" ></ul>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/stylesheet/bulma.css" media="all"></link>
+    <link rel="stylesheet" href="/stylesheet/chat_ui.css"></link>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="/javascript/chat.js"> </script>
+
+  </head>
+
+<body>
+  <nav class="nav has-shadow hero is-medium is-info is-bold">
+    <div class="container">
+      <div class="nav-left">
+        <a class="nav-item">
+          <img src="/resources/chat_social.png">
+        </a>
+        <a class="nav-item is-tab"><i class="fa fa-bell-o"></i> &nbsp; Notifications</a>
       </div>
-    <div style = "float:left; width:50%">
-      <ul id="defaultRoomContent" style = "float:left; width:90%"> DEFAULT</ul>
-      <ul id="room1Content" style = "float:left; width:90%" > room1Content</ul>
-      <ul id="room2Content" style = "float:left; width:90%" >room2Content</ul>
+
+      <span class="nav-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+
+      <div class="nav-right nav-menu">
+        <span class="nav-item">
+          <div class = "field is-grouped">
+            <p class="control">
+              <a class="button is-info" >
+                <span class="icon">
+                  <i class="fa fa-user"></i>
+                </span>
+                <span><%= userName %></span>
+             </a>
+           </p>
+           <p class="control">
+             <button class="button is-info" id="displayModal" onclick='showModal("modal_newRoom")'>CreateGroup</button>
+             <!--Modal Start-->
+             <div id = "modal_newRoom" class= "modal" >
+               <div class= "modal-background"></div>
+               <div class="modal-card">
+                 <header class="modal-card-head">
+                   <p class="modal-card-title is-info">Create New Group</p>
+                   <button class="modal-close" onclick='closeModal("modal_newRoom")'></button>
+                 </header>
+                 <section class="modal-card-body">
+                   <!-- Content ... -->
+                   <!-- Group Name Start-->
+                   <div class="columns">
+                     <div class="column is-3">
+                       <span class="tag is-medium is-light">Group Name</span>
+                     </div>
+                     <div class="column is-8">
+                       <div class="field">
+                         <p class="control">
+                           <input class="input is-focused" type="text" placeholder="Group Name" id="groupName">
+                         </p>
+                       </div>
+                     </div>
+                   </div>
+                   <!-- Group Name End-->
+                   <!-- Select Users Start-->
+                   <div class="columns">
+                     <div class="column is-3">
+                       <span class="tag is-medium is-light">Select users</span>
+                     </div>
+                     <div class="column is-8">
+                       <div class="field">
+                         <p class="control">
+                           <span class="select">
+                             <select onchange="addToTextBox(this)" id = "userList">
+                               <option disabled="disabled" selected="selected">Select a User</option>
+                               <% for(let user of users) {%>
+                                 <option value="<%= user.userName%>"><%= user.userName%></option>
+                               <% } %>
+                             </select>
+                           </span>
+                         </p>
+                       </div>
+                     </div>
+                   </div>
+                   <!-- Select Users End-->
+                   <div class="columns">
+                     <div class="column is-3">
+                       <span class="tag is-medium is-light">Users added</span>
+                     </div>
+                     <div class="column is-8">
+                       <div class="field">
+                         <p class="control">
+                           <input class="input" readonly="readonly" type="text" placeholder="Users added" id="usersAdded">
+                         </p>
+                       </div>
+                     </div>
+                   </div>
+                 </section>
+                 <footer class="modal-card-foot">
+                   <p class="control">
+                     <button class="button is-success" onclick='createGroup()' id="Create">Create Group</button>
+                   </p>
+                 </footer>
+               </div>
+             </div>
+             <!--Modal End-->
+           </p>
+         </div>
+        </span>
+      </div>
     </div>
-  </div>
-      <form action="">
-        <input type="text" id="data" placeholder="Enter your message"/>
-        <button id="send">Send</button>
-        <br>
-        <select id = "selectRooms">
-          <option value = "Room1"> Room1 </option>
-          <option value = "Room2"> Room2 </option>
-        </select>
-        <button id="join">Join</button>
-        <select id = "switchRooms">
-        </select>
-        <button id ="switchButton">Switch Room</button>
-      </form>
-  </div>
-  </body>
+  </nav>
+
+  <section class="section main bg-color">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-3">
+          <!--Logged-in User Details Start-->
+          <!--Logged-in User details End-->
+
+          <!-- List of Groups/Users in current room Start-->
+          <div class="box members" style = "overflow-y:auto; max-height: 80vh">
+            <!-- Room Name -->
+            <p><span class="title is-5 tag">Groups and Users</span></p>
+            <hr style="margin-top: 1.5rem;margin-right: 0px;margin-bottom: 0.5rem;margin-left: 0px;">
+            <div id = "groupsAndUsers"></div>
+          </div>
+          <!-- List of Users in current room End-->
+        </div>
+
+        <!-- Message Pannel Start -->
+        <div class="column is-9" id="messagePannel" style = "overflow-y:auto; height: 80vh;">
+          <div class="box">
+            <p>
+              <span class="title is-5 tag" id = "currentGroup" onclick='displayGroupInfoCard()'></span>
+            </p>
+            <hr>
+             <div id = "messageContent">
+             </div>
+        </div>
+      </div>
+        <!-- Message Pannel End -->
+        <!-- Group Info pannel Start -->
+      <div class="column is-3" id="groupInfoPannel" style= "display:none;overflow-y:auto; max-height: 40vh">
+        <!-- <div class="box"> -->
+            <div class="card">
+              <div class="card-header">
+                <p class="card-header-title">
+                  Group Info
+                </p>
+                <p class="card-header-icon">
+                  <button class="delete" onclick= 'resizeChatUIAndHideGroupInfoPannel("groupInfoPannel")'></button>
+                </p>
+              </div>
+              <div class="card-content" id ="groupMemberDisplayCard">
+                <!-- Start of Add Participant Text -->
+                <p><span class="title is-6 tag" style="cursor:pointer" id="displayAddParticipantText" onclick='showAndPopulateParticipantModal("modalAddUser")'>
+                  <span class="icon is-medium">
+                    <i class="fa fa-user-plus"></i>
+                  </span>
+                   &nbsp;Add participant
+                 </span>
+               </p>
+
+                <!-- End of Add Participant Text-->
+                <!-- Start of Member Names -->
+
+                <!-- End of Member Names -->
+              </div>
+              <footer class="card-footer">
+                <span class="card-footer-item ">
+                  <span class="tag is-danger is-medium" style = "cursor:pointer;" onclick='exitGroup()'>
+                   Exit Group
+                  </span>
+                </span>
+              </footer>
+            </div>
+            <!--Modal start -->
+            <div class="modal" id="modalAddUser">
+              <div class="modal-background"></div>
+              <div class="modal-card">
+                <header class="modal-card-head">
+                  <p class="modal-card-title is-info">Add Participant</p>
+                  <button class="modal-close" onclick='closeAddParticipantModal("modalAddUser")'></button>
+                </header>
+                <section class="modal-card-body">
+                  <!-- Non Member user List Start -->
+                  <div class="field" id = "nonMemberUserList">
+                  </div>
+                  <!-- Non Member user List End -->
+                </section>
+                <footer class="modal-card-foot">
+                  <p class="control">
+                    <button class="button is-success" onclick='addNewParticipant()' id="AddParticipant">Add</button>
+                  </p>
+                </footer>
+              </div>
+            </div>
+            <!--Modal End -->
+      </div>
+      <!-- Group Info pannel End -->
+    </div>
+      <!-- End of Row 1-->
+      <!-- Start of Row2 for msg entry by user-->
+      <div class="columns">
+        <div class="column is-offset-3 is-9" id="msgInputPannel">
+          <div class="field has-addons">
+            <p class="control is-expanded">
+              <input class="input" id="data" type="text" autocomplete="off" placeholder="Enter your message">
+            </p>
+            <button class="button is-active is-info" id="send">
+              <span class="icon is-small ">
+                <i class="fa fa-send"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      <!-- End of Row2 for msg entry -->
+      </div>
+    </div>
+  </section>
+
+
+</body>
 </html>

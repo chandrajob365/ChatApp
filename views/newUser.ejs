@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New User</title>
+</head>
+<body>
+<h1>New User</h1>
+<form action='/newUser' method='post'>
+<input type="hidden" name='user[phoneNumber]' value = <%= phoneNumber %> > </input>
+Phone Number : <input type="text" name='user[phoneNumber]' disabled = 'disabled' value = <%= phoneNumber %> />
+UserName : <input type="text" name='user[name]' placeholder='Username' />
+<input type='submit' value='Save' />
+<form>
+</body>
+</html>

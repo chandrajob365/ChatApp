@@ -9,9 +9,13 @@ const session = require('express-session')({
   saveUninitialized: true
 })
 
-const register = require('./routes/register')
-const login = require('./routes/login')
+
 const chat = require('./routes/chat')
+const accountKitLogin = require('./routes/accountKitLogin')
+
+
+const newUser = require('./routes/newUser')
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
@@ -20,23 +24,25 @@ app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, '/public')))
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 app.use(session)
+/* Account Kit related */
 
-app.get('/', (req, res, next) => {
-  res.render('index', {title: 'Welcome to chat app , Login / Register to continue'})
-})
 app.get('/chatRelay', chat.ui)
-
-app.get('/register', register.form)
-app.post('/register', register.submit)
-
-app.get('/login', login.form)
-app.post('/login', login.submit)
-app.get('/logout', login.logout)
-http.listen(3000, () => {
-  console.log('Server is listening at * 3000')
-})
-
+app.get('/', accountKitLogin.form)
+app.post('/loginSucess', accountKitLogin.success)
+app.post('/newUser', newUser.save)
+// var server_port = process.env.NODEJS_PORT || 3000
+// var server_ip_address = process.env.NODEJS_IP || '127.0.0.1'
+// http.listen(server_port, server_ip_address, () => {
+//   console.log('Server is listening at * ', server_port, ' @ ', server_ip_address)
+// })
+let server_port = process.env.PORT
+console.log('<chat_server.js server_port = ', server_port)
+http.listen(server_port, () => {
+   console.log('Server is listening at * ', server_port)
+ })
 const socket = require('./lib/chat_server')
 socket.listen(http, session)

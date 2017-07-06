@@ -1,49 +1,52 @@
+.spacer-vertical {
+  height:20px;
+}
+.spacer-horizontal{
+  width:10px;
+}
+.members .members-title {
+  padding-bottom: 10px;
+}
 
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.members .members-msgCount {
+  padding-bottom: 8px;
+  color: #3273dc;
 }
-a{
-color: #00B7FF;
+.bg-color{
+  background-color: #D6DBDF;
 }
-#body {
-  width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+.break-word{
+  width: 50vw;
+  overflow-wrap: break-word;
 }
-#defaultRoomContent {
-  width: 690px;
-  height: 300px;
-  overflow: auto;
-  background-color: #eee;
-  margin-bottom: 1em;
-  margin-right: 10px;
+.break-word-info{
+  width: 30vw;
+  overflow-wrap: break-word;
 }
-#room1Content {
-  width: 690px;
-  height: 300px;
-  overflow: auto;
-  background-color: #eee;
-  margin-bottom: 1em;
-  margin-right: 10px;
+/*@media screen and (max-width:767px) {
+    img.responsive {
+        max-width: 16px;
+        max-height: 16px;
+    }
 }
-#room2Content {
-  width: 690px;
-  height: 300px;
-  overflow: auto;
-  background-color: #eee;
-  margin-bottom: 1em;
-  margin-right: 10px;
+
+@media screen and (min-width:768px) {
+    img.responsive {
+        max-width: 24px;
+        max-height: 24px;
+    }
 }
-.marginStyle {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-#content li:nth-child(odd) { background: #eee; }
-#data {
-  width: 700px;
-  margin-bottom: 1em;
-  margin-right: 1em;
+
+@media screen and (min-width:992px) {
+    img.responsive {
+        max-width: 32px;
+        max-height: 32px;
+    }
 }
+
+@media screen and (min-width:1200px) {
+    img.responsive {
+        max-width: 96px;
+        max-height: 96px;
+    }
+}*/

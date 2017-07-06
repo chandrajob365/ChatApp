@@ -31,10 +31,8 @@ class Rooms {
   static lookupOrCreateGroupId (obj, cb) {
     redisClient.get(_keyGen, (err, val) => {
       if(err) throw new Error(err)
-      console.log('<roomdb.js lookupOrCreateGroupId> val = ', val)
       if(val)
       {
-        console.log('<roomdb.js lookupOrCreateGroupId> If part')
         Rooms.getKeyGen(_keyGen, obj, cb)
       } else {
         console.log('<roomdb.js lookupOrCreateGroupId> Else part')

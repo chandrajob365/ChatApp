@@ -30,8 +30,9 @@ class Users {
   }
 
   static insert (data, cb) {
+    let name = data.name.split(' ')[0]
     const sql = 'INSERT INTO users(phoneNumber, userName) VALUES (?, ?)'
-    db.run(sql, data.phoneNumber, data.name, cb)
+    db.run(sql, data.phoneNumber, name, cb)
 
   }
 }

@@ -2,7 +2,6 @@ const UserDB = require('../db/userdb').Users
 
 exports.save = (req, res, next) => {
   var data = req.body.user
-  //req.session.user = user
   UserDB.insert(data, (err, user) => {
     console.log('<newUser.js, save > callback from DB after insert user -> ', user)
     if (err) throw new Error(err)

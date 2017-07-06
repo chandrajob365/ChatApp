@@ -472,6 +472,7 @@ socket.on('chkAndFetchLocalStorage', groupObj => {
 })
 const chkAndFetchLocalStorage = groupObj => {
   let messageList = localStorage.getItem(groupObj.groupId)
+  console.log('<chkAndFetchLocalStorage> messageList : ', messageList)
   if (messageList) {
     parseAndPopulateMsgPannel(groupObj, JSON.parse(messageList))
     if (JSON.parse(messageList) instanceof Array)
@@ -504,6 +505,7 @@ socket.on('messageList', msg => {
   parseAndPopulateMsgPannel(msg, msg.messageList)
 })
 const pushToLocalStorage = (groupId, messageList) => {
+  console.log('<pushToLocalStorage> groupId = ', groupId, ' messageList = ', messageList)
   if (window.localStorage) {
     let msgs = JSON.parse(localStorage.getItem(groupId))
     if (messageList instanceof Array)

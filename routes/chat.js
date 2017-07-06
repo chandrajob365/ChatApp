@@ -2,7 +2,6 @@ const UserDB = require('../db/userdb').Users
 exports.ui = (req, res, next) => {
   if (req.session && req.session.user) {
     let name = req.session.user.userName
-    console.log('</routes/chat.js , ui> userName -> ', name)
     req.userName = res.locals.userName = name
     getAllUsers(res, name)
   } else {

@@ -11,9 +11,7 @@ AccountKit_OnInteractive = function() {
 
 // login callback
 function loginCallback(response) {
-  console.log('<accountKitLogin.js , loginCallback > response ----> ', response)
   if (response.status === 'PARTIALLY_AUTHENTICATED') {
-    console.log('<accountKitLogin.js , loginCallback > response.code = ', response.code, ' response.state = ', response.state)
     document.getElementById('code').value = response.code
     document.getElementById('csrf').value = response.state
     document.getElementById('login_success').submit()

@@ -1,8 +1,3 @@
-document.onreadystatechange = function(e)
-{
-    if (document.readyState === 'complete')
-    {
-        console.log('<localStorage.js onreadystatechange>, Entry')
-        localStorage.clear()
-    }
+document.onreadystatechange = e => {
+  if (document.readyState === 'complete') localStorage.clear()
 }

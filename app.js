@@ -34,13 +34,7 @@ app.get('/chatRelay', chat.ui)
 app.get('/', accountKitLogin.form)
 app.post('/loginSucess', accountKitLogin.success)
 app.post('/newUser', newUser.save)
-// var server_port = process.env.NODEJS_PORT || 3000
-// var server_ip_address = process.env.NODEJS_IP || '127.0.0.1'
-// http.listen(server_port, server_ip_address, () => {
-//   console.log('Server is listening at * ', server_port, ' @ ', server_ip_address)
-// })
 let server_port = process.env.PORT
-console.log('<chat_server.js server_port = ', server_port)
 http.listen(server_port, () => {
    console.log('Server is listening at * ', server_port)
  })

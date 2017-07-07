@@ -524,10 +524,10 @@ const pushToLocalStorage = (groupId, messageList) => {
 
 /* Logout feature Start */
 const logout = () => {
-  localStorage.clear()
   socket.emit('logout')
 }
 socket.on('logout', () => {
+  localStorage.clear()
   window.location.replace('/logout')
 })
 /* Logout feature End */

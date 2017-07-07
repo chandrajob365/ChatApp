@@ -520,4 +520,8 @@ const pushToLocalStorage = (groupId, messageList) => {
     }
   }
 }
+const logout = () => {
+  localStorage.clear()
+  window.location.replace('/logout')
+}
 /* localStorage Related End */

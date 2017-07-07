@@ -34,6 +34,7 @@ app.get('/chatRelay', chat.ui)
 app.get('/', accountKitLogin.form)
 app.post('/loginSucess', accountKitLogin.success)
 app.post('/newUser', newUser.save)
+app.get('/logout', chat.logout)
 let server_port = process.env.PORT
 http.listen(server_port, () => {
    console.log('Server is listening at * ', server_port)
